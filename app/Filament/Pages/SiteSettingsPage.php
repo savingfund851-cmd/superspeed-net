@@ -70,6 +70,15 @@ class SiteSettingsPage extends Page
             'marquee_2'        => $S('marquee_2', 'Starting Price ৳500+'),
             'marquee_3'        => $S('marquee_3', '24/7 NOC Support'),
             'marquee_4'        => $S('marquee_4', 'Zero Throttling Policy'),
+            // ── Footer & Social ──
+            'footer_brand_text'=> $S('footer_brand_text', "Bangladesh's premium dedicated fiber ISP. Fast, reliable and BTRC compliant since 2020."),
+            'footer_copy'      => $S('footer_copy', '© 2024 SuperSpeed Net. All rights reserved.'),
+            'developer_name'   => $S('developer_name', 'TR'),
+            'social_facebook'  => $S('social_facebook', ''),
+            'social_youtube'   => $S('social_youtube', ''),
+            'social_instagram' => $S('social_instagram', ''),
+            'social_twitter'   => $S('social_twitter', ''),
+            'social_whatsapp'  => $S('social_whatsapp', ''),
         ]);
     }
 
@@ -183,6 +192,24 @@ class SiteSettingsPage extends Page
                                 Forms\Components\TextInput::make('marquee_2')->label('Marquee Text 2'),
                                 Forms\Components\TextInput::make('marquee_3')->label('Marquee Text 3'),
                                 Forms\Components\TextInput::make('marquee_4')->label('Marquee Text 4'),
+                            ]),
+
+                        // ── TAB 6: Footer & Social Media ─────────────────────
+                        Forms\Components\Tabs\Tab::make('Footer & Social')
+                            ->icon('heroicon-o-share')
+                            ->schema([
+                                Forms\Components\Section::make('Footer Text')->schema([
+                                    Forms\Components\Textarea::make('footer_brand_text')->label('Brand Description')->rows(2),
+                                    Forms\Components\TextInput::make('footer_copy')->label('Copyright Text'),
+                                    Forms\Components\TextInput::make('developer_name')->label('Developer Name (Developed by: ?)'),
+                                ])->columns(1),
+                                Forms\Components\Section::make('Social Media Links')->schema([
+                                    Forms\Components\TextInput::make('social_facebook')->label('Facebook URL')->url()->placeholder('https://facebook.com/yourpage'),
+                                    Forms\Components\TextInput::make('social_youtube')->label('YouTube URL')->url()->placeholder('https://youtube.com/@yourchannel'),
+                                    Forms\Components\TextInput::make('social_instagram')->label('Instagram URL')->url()->placeholder('https://instagram.com/yourpage'),
+                                    Forms\Components\TextInput::make('social_twitter')->label('Twitter/X URL')->url()->placeholder('https://x.com/yourhandle'),
+                                    Forms\Components\TextInput::make('social_whatsapp')->label('WhatsApp Number')->placeholder('+8801700000000'),
+                                ])->columns(2),
                             ]),
 
                     ])->columnSpanFull()
