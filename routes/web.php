@@ -1,11 +1,17 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    $banners = \App\Models\Banner::where('is_active', true)->orderBy('sort_order')->get();
+    $banners = Cache::remember('home_banners', 300, function () {
+        return \App\Models\Banner::where('is_active', true)->orderBy('sort_order')->get();
+    });
+
+    // Single DB call for ALL settings (cached 10 min via SiteSetting model)
     $S = fn($k, $d='') => \App\Models\SiteSetting::get($k, $d);
+
     $settings = [
         // ── General ──
         'site_name'        => $S('site_name', 'SuperSpeed Net'),
@@ -93,7 +99,6 @@ Route::post('/quick-pay/process', [\App\Http\Controllers\PaymentController::clas
 
 // Gateway Callbacks (Must be outside auth as gateway redirects back)
 Route::get('/payment/callback', [\App\Http\Controllers\PaymentController::class, 'callback'])->name('payment.callback');
-Route::post('/payment/ipn', [\App\Http\Controllers\PaymentController::class, 'ipn'])->name('payment.ipn');
 
 Route::get('/new-connection', [\App\Http\Controllers\NewConnectionController::class, 'create'])->name('new-connection');
 Route::post('/new-connection', [\App\Http\Controllers\NewConnectionController::class, 'store'])->name('new-connection.store');

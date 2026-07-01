@@ -7,6 +7,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Illuminate\Support\Facades\Cache;
 
 class SiteSettingsPage extends Page
 {
@@ -224,6 +225,12 @@ class SiteSettingsPage extends Page
         foreach ($state as $key => $value) {
             SiteSetting::set($key, $value ?? '');
         }
+
+        // Clear all frontend caches so changes appear immediately
+        Cache::forget('site_settings');
+        Cache::forget('home_banners');
+        Cache::forget('api_menus');
+        Cache::forget('api_packages');
 
         Notification::make()
             ->title('✅ Settings saved successfully!')
