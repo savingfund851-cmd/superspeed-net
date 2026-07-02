@@ -37,4 +37,15 @@ class Menu extends Model
     {
         return $this->hasMany(Menu::class, 'parent_id')->orderBy('order');
     }
+
+    protected static function booted()
+    {
+        static::saved(function ($menu) {
+            \Illuminate\Support\Facades\Cache::forget('api_menus');
+        });
+        
+        static::deleted(function ($menu) {
+            \Illuminate\Support\Facades\Cache::forget('api_menus');
+        });
+    }
 }

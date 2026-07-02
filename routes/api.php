@@ -22,8 +22,11 @@ Route::get('/packages', function () {
 
 Route::get('/menus', function () {
     return Cache::remember('api_menus', 300, function () {
-        return \App\Models\Menu::with('children')
+        return \App\Models\Menu::with(['children' => function($query) {
+                $query->where('is_active', true)->orderBy('order');
+            }])
             ->whereNull('parent_id')
+            ->where('is_active', true)
             ->orderBy('order')
             ->get()->toArray();
     });
