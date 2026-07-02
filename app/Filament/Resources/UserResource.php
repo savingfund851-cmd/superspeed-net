@@ -41,9 +41,17 @@ class UserResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->required(),
+                        Forms\Components\TextInput::make('login_id')
+                            ->label('Login ID / Mobile')
+                            ->unique(ignoreRecord: true)
+                            ->placeholder('Defaults to phone number if empty'),
+                        Forms\Components\TextInput::make('customer_id')
+                            ->label('Customer ID (Manual)')
+                            ->unique(ignoreRecord: true)
+                            ->placeholder('e.g. CUST-001'),
                         Forms\Components\TextInput::make('email')
                             ->email()
-                            ->required(),
+                            ->unique(ignoreRecord: true),
                         Forms\Components\TextInput::make('password')
                             ->password()
                             ->dehydrated(fn ($state) => filled($state))

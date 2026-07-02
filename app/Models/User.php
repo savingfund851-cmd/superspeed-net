@@ -16,6 +16,8 @@ class User extends Authenticatable implements FilamentUser
     use HasFactory, Notifiable;
 
     protected $fillable = [
+        'login_id',
+        'customer_id',
         'name',
         'email',
         'password',
@@ -25,6 +27,18 @@ class User extends Authenticatable implements FilamentUser
         'address',
         'status',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($user) {
+            // Default login_id to phone if it's empty
+            if (empty($user->login_id) && !empty($user->phone)) {
+                $user->login_id = $user->phone;
+            }
+        });
+    }
 
     protected $hidden = [
         'password',

@@ -129,11 +129,11 @@
                 @csrf
 
                 <div class="form-group">
-                    <label class="form-label" for="email">{{ __('Email') }}</label>
-                    <input id="email" class="form-input" type="email" name="email"
-                           value="{{ old('email') }}" required autofocus
-                           placeholder="example@email.com">
-                    @error('email')<div class="error-msg">{{ $message }}</div>@enderror
+                    <label class="form-label" for="login_id">{{ __('Login ID / Mobile') }}</label>
+                    <input id="login_id" class="form-input" type="text" name="login_id"
+                           value="{{ old('login_id') }}" required autofocus
+                           placeholder="Enter your ID or Mobile number">
+                    @error('login_id')<div class="error-msg">{{ $message }}</div>@enderror
                 </div>
 
                 <div class="form-group">
@@ -143,11 +143,7 @@
                     @error('password')<div class="error-msg">{{ $message }}</div>@enderror
                 </div>
 
-                <div class="check-row">
-                    <label class="check-label">
-                        <input type="checkbox" name="remember">
-                        {{ __('Remember me') }}
-                    </label>
+                <div class="check-row" style="justify-content: flex-end;">
                     @if(Route::has('password.request'))
                     <a href="{{ route('password.request') }}" class="forgot">{{ __('Forgot password?') }}</a>
                     @endif

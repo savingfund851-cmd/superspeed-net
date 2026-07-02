@@ -55,7 +55,10 @@
         }
 
         /* Nav items */
-        .sidebar-nav{flex:1;padding:16px 12px;}
+        .sidebar-nav{flex:1;padding:16px 12px;display:flex;flex-direction:column;overflow-y:auto;}
+        .sidebar-footer{padding:12px;border-top:1px solid var(--border);}
+        .btn-signout{display:flex;align-items:center;gap:10px;width:100%;padding:11px 12px;border-radius:10px;background:transparent;border:1px solid rgba(239,68,68,0.15);color:rgba(239,68,68,0.7);font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;text-align:left;}
+        .btn-signout:hover{background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.3);color:var(--danger);}
         .nav-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);padding:8px 8px 4px;}
         .nav-item{
             display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;
@@ -147,17 +150,14 @@
             <a href="{{ route('quick-pay') }}" class="nav-item">
                 <span class="icon">💳</span> {{ __('Quick Pay') }}
             </a>
-            <a href="/" class="nav-item">
-                <span class="icon">🌐</span> {{ __('Main Website') }}
-            </a>
         </nav>
 
-        <!-- Logout -->
+        <!-- Signout at bottom -->
         <div class="sidebar-footer">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="btn-logout">
-                    <span>🚪</span> {{ __('Logout') }}
+                <button type="submit" class="btn-signout">
+                    <span>🚪</span> {{ __('Signout') }}
                 </button>
             </form>
         </div>

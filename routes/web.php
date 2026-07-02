@@ -5,9 +5,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    $banners = Cache::remember('home_banners', 300, function () {
-        return \App\Models\Banner::where('is_active', true)->orderBy('sort_order')->get();
-    });
+    $banners = \App\Models\Banner::where('is_active', true)->orderBy('sort_order')->get();
 
     // Single DB call for ALL settings (cached 10 min via SiteSetting model)
     $S = fn($k, $d='') => \App\Models\SiteSetting::get($k, $d);

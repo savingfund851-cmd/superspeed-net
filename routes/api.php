@@ -16,7 +16,7 @@ Route::get('/packages', function () {
             ->orderBy('price', 'asc')
             ->get(['id', 'name', 'speed_mbps', 'price', 'validity_days',
                    'btrc_approved_tariff', 'btrc_approval_number',
-                   'description', 'features']);
+                   'description', 'features'])->toArray();
     });
 });
 
@@ -25,7 +25,7 @@ Route::get('/menus', function () {
         return \App\Models\Menu::with('children')
             ->whereNull('parent_id')
             ->orderBy('order')
-            ->get();
+            ->get()->toArray();
     });
 });
 

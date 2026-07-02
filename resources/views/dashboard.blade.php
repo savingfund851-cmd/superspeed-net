@@ -84,33 +84,102 @@
 
     @php $user = Auth::user(); @endphp
 
-    {{-- ── Customer Info Bar ── --}}
-    <div class="info-card">
-        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--primary);margin-bottom:6px;">{{ __('Your Account Info') }}</div>
-        <div style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;">{{ $user->name }}</div>
-        <div class="info-grid">
-            <div class="info-item">
-                <div class="info-label">{{ __('Customer ID') }}</div>
-                <div class="info-value" style="color:var(--cyan);">#{{ str_pad($user->id, 5, '0', STR_PAD_LEFT) }}</div>
+    {{-- ── Customer Profile Card (Premium) ── --}}
+    <style>
+        .profile-hero {
+            position: relative; overflow: hidden; border-radius: 24px; margin-bottom: 24px;
+            background: linear-gradient(135deg, rgba(14,165,233,0.12) 0%, rgba(99,102,241,0.10) 50%, rgba(34,211,238,0.08) 100%);
+            border: 1px solid rgba(14,165,233,0.25);
+            padding: 0;
+        }
+        .profile-hero::before {
+            content: ''; position: absolute; top: -60px; right: -60px;
+            width: 250px; height: 250px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(14,165,233,0.15), transparent 70%);
+            pointer-events: none;
+        }
+        .profile-hero::after {
+            content: ''; position: absolute; bottom: -40px; left: 30%;
+            width: 180px; height: 180px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(99,102,241,0.10), transparent 70%);
+            pointer-events: none;
+        }
+        .profile-banner {
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary), var(--cyan), #6366f1, var(--primary));
+            background-size: 200% 100%;
+            animation: bannerMove 3s linear infinite;
+        }
+        @keyframes bannerMove { 0%{background-position:0% 0%} 100%{background-position:200% 0%} }
+        .profile-body { padding: 28px 32px 32px; position: relative; z-index: 2; }
+        .profile-top { display: flex; align-items: center; gap: 20px; margin-bottom: 24px; }
+        .profile-avatar {
+            width: 72px; height: 72px; border-radius: 50%; flex-shrink: 0;
+            background: linear-gradient(135deg, var(--primary), var(--cyan));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; font-weight: 900; color: #fff;
+            box-shadow: 0 0 30px rgba(14,165,233,0.4), 0 0 0 4px rgba(14,165,233,0.15);
+        }
+        .profile-name-block { flex: 1; }
+        .profile-name { font-family:'Space Grotesk',sans-serif; font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+        .profile-role { display: inline-flex; align-items: center; gap: 6px; padding: 4px 14px; border-radius: 100px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.25); color: var(--success); }
+        .cust-id-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 20px; border-radius: 12px;
+            background: rgba(14,165,233,0.08); border: 1px solid rgba(14,165,233,0.2);
+            font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 800;
+            color: var(--cyan); letter-spacing: 1px;
+        }
+        .cust-id-badge span.label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text3); display: block; }
+        .profile-divider { height: 1px; background: var(--border); margin: 0 0 24px; }
+        .profile-info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+        .profile-info-item { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; transition: border-color 0.2s; }
+        .profile-info-item:hover { border-color: rgba(14,165,233,0.2); }
+        .profile-info-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text3); margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
+        .profile-info-value { font-size: 14px; font-weight: 600; color: var(--text); word-break: break-all; }
+    </style>
+
+    <div class="profile-hero">
+        <div class="profile-banner"></div>
+        <div class="profile-body">
+            <div class="profile-top">
+                <div class="profile-avatar">{{ strtoupper(substr($user->name, 0, 1)) }}</div>
+                <div class="profile-name-block">
+                    <div class="profile-name">{{ $user->name }}</div>
+                    <span class="profile-role">🟢 {{ __('Active Customer') }}</span>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:6px;">{{ __('Customer ID') }}</div>
+                    <div class="cust-id-badge">
+                        # {{ $user->customer_id ?? str_pad($user->id, 5, '0', STR_PAD_LEFT) }}
+                    </div>
+                </div>
             </div>
-            <div class="info-item">
-                <div class="info-label">{{ __('Phone Number') }}</div>
-                <div class="info-value">{{ $user->phone ?? 'N/A' }}</div>
+            <div class="profile-divider"></div>
+            <div class="profile-info-grid">
+                <div class="profile-info-item">
+                    <div class="profile-info-label">📱 {{ __('Mobile') }}</div>
+                    <div class="profile-info-value">{{ $user->phone ?? 'N/A' }}</div>
+                </div>
+                <div class="profile-info-item">
+                    <div class="profile-info-label">🔑 {{ __('Login ID') }}</div>
+                    <div class="profile-info-value" style="color:var(--cyan);">{{ $user->login_id ?? $user->phone ?? 'N/A' }}</div>
+                </div>
+                <div class="profile-info-item">
+                    <div class="profile-info-label">✉️ {{ __('Email') }}</div>
+                    <div class="profile-info-value" style="font-size:13px;">{{ $user->email ?? 'N/A' }}</div>
+                </div>
+                <div class="profile-info-item">
+                    <div class="profile-info-label">📅 {{ __('Member Since') }}</div>
+                    <div class="profile-info-value">{{ $user->created_at->format('d M, Y') }}</div>
+                </div>
+                @if($user->address)
+                <div class="profile-info-item" style="grid-column: span 2;">
+                    <div class="profile-info-label">📍 {{ __('Address') }}</div>
+                    <div class="profile-info-value" style="font-size:13px;">{{ $user->address }}</div>
+                </div>
+                @endif
             </div>
-            <div class="info-item">
-                <div class="info-label">{{ __('Email') }}</div>
-                <div class="info-value" style="font-size:13px;">{{ $user->email }}</div>
-            </div>
-            <div class="info-item">
-                <div class="info-label">{{ __('Status') }}</div>
-                <div class="info-value" style="color:var(--success);">✅ {{ __('Active') }}</div>
-            </div>
-            @if($user->address)
-            <div class="info-item" style="grid-column:span 2;">
-                <div class="info-label">{{ __('Address') }}</div>
-                <div class="info-value" style="font-size:13px;">{{ $user->address }}</div>
-            </div>
-            @endif
         </div>
     </div>
 

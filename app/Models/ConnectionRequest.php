@@ -24,4 +24,25 @@ class ConnectionRequest extends Model
     {
         return $this->belongsTo(Package::class);
     }
+
+    protected static function booted()
+    {
+        static::updated(function (ConnectionRequest $request) {
+            if ($request->isDirty('status') && $request->status === 'completed') {
+                // Auto create user if they don't already exist
+                User::firstOrCreate(
+                    ['login_id' => $request->mobile],
+                    [
+                        'name' => $request->name,
+                        'email' => $request->email,
+                        'phone' => $request->mobile,
+                        'password' => \Illuminate\Support\Facades\Hash::make($request->mobile),
+                        'address' => $request->address,
+                        'role' => 'customer',
+                        'status' => 'active',
+                    ]
+                );
+            }
+        });
+    }
 }

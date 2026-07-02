@@ -103,13 +103,14 @@
            ═══════════════════════════════════════════ */
         .glass-nav {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            width: 95%; max-width: 1600px; z-index: 1000;
+            width: 95%; max-width: 1600px; z-index: 9000;
             display: flex; align-items: center; justify-content: space-between;
             background: rgba(10, 20, 40, 0.85);
             border-bottom: 1px solid rgba(255,255,255,0.1);
             backdrop-filter: blur(24px) saturate(180%);
             -webkit-backdrop-filter: blur(24px) saturate(180%);
             transition: all 0.4s ease;
+            overflow: visible;
         }
         .nav-logo-link {
             display: flex; align-items: center; gap: 12px;
@@ -178,9 +179,8 @@
             display: flex; align-items: center; gap: 4px; flex-wrap: nowrap;
             justify-content: center;
             margin: 0 auto;
-            overflow-x: auto;
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+            overflow: visible;
+            position: static;
         }
         .nav-links-group::-webkit-scrollbar {
             display: none;
@@ -239,7 +239,8 @@
             transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
             z-index: 10000;
         }
-        .nav-item-dropdown:hover .nav-dropdown {
+        .nav-item-dropdown:hover .nav-dropdown,
+        .nav-item-dropdown:focus-within .nav-dropdown {
             opacity: 1; visibility: visible; pointer-events: auto; transform: translateX(-50%) translateY(0);
         }
         .nav-dropdown a {
@@ -1019,10 +1020,16 @@
         <!-- Menus will be injected here -->
     </div>
     
-    <div style="display:flex;align-items:center;gap:8px;margin-left:auto;margin-right:16px;">
-        <a href="{{ route('lang.switch', 'en') }}" style="color: {{ app()->getLocale() === 'en' ? 'var(--neon-cyan)' : 'var(--text-secondary)' }}; font-weight:700; text-decoration:none; font-size:13px; font-family:'Space Grotesk',sans-serif;">EN</a>
-        <span style="color:rgba(255,255,255,0.2);">|</span>
-        <a href="{{ route('lang.switch', 'bn') }}" style="color: {{ app()->getLocale() === 'bn' ? 'var(--neon-cyan)' : 'var(--text-secondary)' }}; font-weight:700; text-decoration:none; font-size:13px; font-family:'Space Grotesk',sans-serif;">BN</a>
+    <div style="display:flex;align-items:center;gap:16px;margin-left:auto;margin-right:16px;">
+        <a href="{{ route('login') }}" class="nav-cta">
+            <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+            {{ __('Login') }}
+        </a>
+        <div style="display:flex;align-items:center;gap:8px;">
+            <a href="{{ route('lang.switch', 'en') }}" style="color: {{ app()->getLocale() === 'en' ? 'var(--neon-cyan)' : 'var(--text-secondary)' }}; font-weight:700; text-decoration:none; font-size:13px; font-family:'Space Grotesk',sans-serif;">EN</a>
+            <span style="color:rgba(255,255,255,0.2);">|</span>
+            <a href="{{ route('lang.switch', 'bn') }}" style="color: {{ app()->getLocale() === 'bn' ? 'var(--neon-cyan)' : 'var(--text-secondary)' }}; font-weight:700; text-decoration:none; font-size:13px; font-family:'Space Grotesk',sans-serif;">BN</a>
+        </div>
     </div>
 
     <button class="nav-hamburger" id="navHamburger" aria-label="Menu">☰</button>
