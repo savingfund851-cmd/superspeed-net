@@ -16,17 +16,15 @@ RUN apk add --no-cache \
     unzip \
     shadow
 
-# Install PHP extensions (including intl which was missing)
+# Install PHP extensions (only non-built-in ones)
+# Note: ctype, fileinfo, tokenizer are already built-in to php:8.3-cli-alpine
 RUN docker-php-ext-install \
     bcmath \
-    ctype \
-    fileinfo \
     gd \
     intl \
     mbstring \
     pdo \
     pdo_mysql \
-    tokenizer \
     xml \
     zip \
     opcache
