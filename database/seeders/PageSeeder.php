@@ -32,7 +32,7 @@ class PageSeeder extends Seeder
 
         foreach ($pages as $pageData) {
             $pageData['slug'] = Str::slug($pageData['title']);
-            Page::create($pageData);
+            Page::updateOrCreate(['slug' => $pageData['slug']], $pageData);
 
             // Update the menu item to point to this page
             Menu::where('name', $pageData['title'])->update(['url' => '/' . $pageData['slug']]);

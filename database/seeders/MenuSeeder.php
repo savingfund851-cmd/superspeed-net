@@ -46,11 +46,11 @@ class MenuSeeder extends Seeder
             $children = $menuData['children'] ?? [];
             unset($menuData['children']);
             
-            $parent = Menu::create($menuData);
+            $parent = Menu::updateOrCreate(['name' => $menuData['name']], $menuData);
             
             foreach ($children as $childData) {
                 $childData['parent_id'] = $parent->id;
-                Menu::create($childData);
+                Menu::updateOrCreate(['name' => $childData['name']], $childData);
             }
         }
     }
