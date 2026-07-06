@@ -44,6 +44,15 @@ return [
             'transaction_mode' => 'DEFERRED',
         ],
 
+        'sqlite_old' => [
+            'driver' => 'sqlite',
+            'url' => env('DB_URL'),
+            'database' => database_path('database.sqlite'),
+            'prefix' => '',
+            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
+        ],
+
+
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('MYSQL_URL', env('DB_URL')),
