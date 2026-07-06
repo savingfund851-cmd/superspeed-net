@@ -20,6 +20,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (config('app.env') === 'production') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         // Share $settings globally to ALL blade views
         View::composer('*', function ($view) {
             $S = fn($k, $d = '') => \App\Models\SiteSetting::get($k, $d);
