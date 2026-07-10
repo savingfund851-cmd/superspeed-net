@@ -70,7 +70,25 @@ Route::get('/', function () {
         'social_twitter'      => $S('social_twitter', '#'),
         'social_whatsapp'     => $S('social_whatsapp', '#'),
     ];
-    return view('welcome', compact('banners', 'settings'));
+    $packages = Cache::remember('api_packages', 300, function () {
+        return \App\Models\Package::where('is_active', true)
+            ->orderBy('price', 'asc')
+            ->get(['id', 'name', 'speed_mbps', 'price', 'validity_days',
+                   'btrc_approved_tariff', 'btrc_approval_number',
+                   'description', 'features'])->toArray();
+    });
+
+    $menus = Cache::remember('api_menus', 300, function () {
+        return \App\Models\Menu::with(['children' => function($query) {
+                $query->where('is_active', true)->orderBy('order');
+            }])
+            ->whereNull('parent_id')
+            ->where('is_active', true)
+            ->orderBy('order')
+            ->get()->toArray();
+    });
+
+    return view('welcome', compact('banners', 'settings', 'packages', 'menus'));
 });
 
 Route::get('/dashboard', [\App\Http\Controllers\CustomerPortalController::class, 'index'])

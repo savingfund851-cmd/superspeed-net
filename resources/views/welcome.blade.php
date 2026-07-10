@@ -1016,9 +1016,7 @@
             <span class="nb-network">NET</span>
         </span>
     </a>
-    <div class="nav-links-group" id="navLinksGroup">
-        <!-- Menus will be injected here -->
-    </div>
+    <div class="nav-links-group" id="navLinksGroup">@if(isset($menus))@foreach($menus as $menu)@if(isset($menu['children']) && count($menu['children']) > 0)<div class="nav-item-dropdown" tabindex="0"><a href="{{ $menu['url'] }}" class="nav-link">{{ __($menu['name']) }} ?</a><div class="nav-dropdown">@foreach($menu['children'] as $child)<a href="{{ $child['url'] }}">{{ __($child['name']) }}</a>@endforeach</div></div>@else @if(str_contains(strtolower($menu['name']), 'pay'))<a href="{{ $menu['url'] }}" class="nav-cta">{{ __($menu['name']) }}</a>@else <a href="{{ $menu['url'] }}" class="nav-link">{{ __($menu['name']) }}</a>@endif @endif @endforeach @endif <div class="nav-pill" id="navPill"></div></div>
     
     <div style="display:flex;align-items:center;gap:16px;margin-left:auto;margin-right:16px;">
         <a href="{{ route('login') }}" class="nav-cta">
@@ -1210,9 +1208,39 @@
             <p>{{ $settings['packages_sub'] }}</p>
         </div>
         <div class="pkg-grid" id="pkgGrid">
-            <div style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--text-tertiary)">Loading packages…</div>
-        </div>
+@if(isset($packages) && count($packages) > 0)
+@php $mid = floor(count($packages) / 2); @endphp
+@foreach($packages as $index => $p)
+@php
+    $isFeat = $index === (int)$mid;
+    $feat = is_array($p['features']) ? $p['features'] : json_decode($p['features'] ?? '[]', true);
+@endphp
+<div class="pkg-card {{ $isFeat ? 'featured' : '' }} reveal reveal-delay-{{ $index }}">
+    @if($isFeat)<span class="pkg-featured-tag">? Most Popular</span>@endif
+    <div class="pkg-speed-tag">{{ $p['speed_mbps'] >= 1000 ? ($p['speed_mbps']/1000) . ' Gbps' : $p['speed_mbps'] . ' Mbps' }} Dedicated</div>
+    <div class="pkg-title">{{ $p['name'] }}</div>
+    <div class="pkg-desc">{{ $p['description'] ?? '' }}</div>
+    <div class="pkg-price-row">
+        <span class="pkg-currency">?</span>
+        <span class="pkg-amount">{{ number_format((float)$p['price']) }}</span>
+        <span class="pkg-period">/mo</span>
     </div>
+    @if($p['btrc_approval_number'])
+    <div class="pkg-btrc-ref">BTRC: <span>{{ $p['btrc_approval_number'] }}</span></div>
+    @endif
+    <ul class="pkg-features">
+        @foreach($feat as $f)
+            <li><span class="pkg-check"></span>{{ $f }}</li>
+        @endforeach
+    </ul>
+    <a href="#contact" class="btn-pkg {{ $isFeat ? 'featured-btn' : '' }}">Get Started ?</a>
+</div>
+@endforeach
+@else
+<div style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--text-tertiary)">No packages available.</div>
+@endif
+</div>
+</div>
 </section>
 
 <!-- Removed external banner slider as it's now in hero-right -->
@@ -1668,8 +1696,6 @@ function initBannerSlider() {
 
 // ─── INIT ───
 document.addEventListener('DOMContentLoaded', () => {
-    loadPkgs();
-    loadMenus();
     initBannerSlider();
 });
 </script>
@@ -1677,3 +1703,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
+
+
+
+
