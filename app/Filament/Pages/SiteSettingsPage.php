@@ -57,6 +57,8 @@ class SiteSettingsPage extends Page
             'btrc_desc'        => $S('btrc_desc', 'SuperSpeed Net operates under full authorization from the Bangladesh Telecommunication Regulatory Commission (BTRC). All packages are at or below approved tariff ceilings.'),
             'btrc_link_url'    => $S('btrc_link_url', 'https://www.btrc.gov.bd'),
             'btrc_link_lbl'    => $S('btrc_link_lbl', 'View BTRC Tariff Matrix'),
+            'pay_bill_instruction' => $S('pay_bill_instruction', 'Payment can be made via bKash and Nagad.
+Payment number: 01608430537'),
             'cta_heading'      => $S('cta_heading', 'Ready to Get Connected?'),
             'cta_sub'          => $S('cta_sub', 'Call us now or visit our office. Online within 24 hours of sign-up.'),
             'stat_1_val'       => $S('stat_1_val', '5,000+'),
@@ -132,6 +134,9 @@ class SiteSettingsPage extends Page
 
                                 Forms\Components\Section::make('Contact / CTA Section')
                                     ->schema([
+                                        Forms\Components\Textarea::make('pay_bill_instruction')
+                                            ->label('Pay Bill Instruction (Shown above CTA)')
+                                            ->rows(3),
                                         Forms\Components\TextInput::make('cta_heading')->label('Heading'),
                                         Forms\Components\TextInput::make('cta_sub')->label('Sub-text'),
                                     ]),

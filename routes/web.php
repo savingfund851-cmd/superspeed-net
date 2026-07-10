@@ -42,6 +42,9 @@ Route::get('/', function () {
         'btrc_desc'        => $S('btrc_desc', 'SuperSpeed Net operates under full authorization from the Bangladesh Telecommunication Regulatory Commission (BTRC). All packages are at or below approved tariff ceilings.'),
         'btrc_link_url'    => $S('btrc_link_url', 'https://www.btrc.gov.bd'),
         'btrc_link_lbl'    => $S('btrc_link_lbl', 'View BTRC Tariff Matrix'),
+        // 💳 CTA 💳
+        'pay_bill_instruction' => $S('pay_bill_instruction', 'Payment can be made via bKash and Nagad.
+Payment number: 01608430537'),
         // ── CTA ──
         'cta_heading'      => $S('cta_heading', 'Ready to Get Connected?'),
         'cta_sub'          => $S('cta_sub', 'Call us now or visit our office. Online within 24 hours of sign-up.'),

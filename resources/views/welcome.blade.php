@@ -1016,7 +1016,29 @@
             <span class="nb-network">NET</span>
         </span>
     </a>
-    <div class="nav-links-group" id="navLinksGroup">@if(isset($menus))@foreach($menus as $menu)@if(isset($menu['children']) && count($menu['children']) > 0)<div class="nav-item-dropdown" tabindex="0"><a href="{{ $menu['url'] }}" class="nav-link">{{ __($menu['name']) }} ?</a><div class="nav-dropdown">@foreach($menu['children'] as $child)<a href="{{ $child['url'] }}">{{ __($child['name']) }}</a>@endforeach</div></div>@else @if(str_contains(strtolower($menu['name']), 'pay'))<a href="{{ $menu['url'] }}" class="nav-cta">{{ __($menu['name']) }}</a>@else <a href="{{ $menu['url'] }}" class="nav-link">{{ __($menu['name']) }}</a>@endif @endif @endforeach @endif <div class="nav-pill" id="navPill"></div></div>
+    <div class="nav-links-group" id="navLinksGroup">
+        @if(isset($menus))
+            @foreach($menus as $menu)
+                @if(isset($menu['children']) && count($menu['children']) > 0)
+                    <div class="nav-item-dropdown" tabindex="0">
+                        <a href="{{ $menu['url'] }}" class="nav-link">{{ __($menu['name']) }} ▾</a>
+                        <div class="nav-dropdown">
+                            @foreach($menu['children'] as $child)
+                                <a href="{{ $child['url'] }}">{{ __($child['name']) }}</a>
+                            @endforeach
+                        </div>
+                    </div>
+                @else
+                    @if(str_contains(strtolower($menu['name']), 'pay'))
+                        <a href="{{ $menu['url'] }}" class="nav-cta">{{ __($menu['name']) }}</a>
+                    @else
+                        <a href="{{ $menu['url'] }}" class="nav-link">{{ __($menu['name']) }}</a>
+                    @endif
+                @endif
+            @endforeach
+        @endif
+        <div class="nav-pill" id="navPill"></div>
+    </div>
     
     <div style="display:flex;align-items:center;gap:16px;margin-left:auto;margin-right:16px;">
         <a href="{{ route('login') }}" class="nav-cta">
@@ -1208,39 +1230,41 @@
             <p>{{ $settings['packages_sub'] }}</p>
         </div>
         <div class="pkg-grid" id="pkgGrid">
-@if(isset($packages) && count($packages) > 0)
-@php $mid = floor(count($packages) / 2); @endphp
-@foreach($packages as $index => $p)
-@php
-    $isFeat = $index === (int)$mid;
-    $feat = is_array($p['features']) ? $p['features'] : json_decode($p['features'] ?? '[]', true);
-@endphp
-<div class="pkg-card {{ $isFeat ? 'featured' : '' }} reveal reveal-delay-{{ $index }}">
-    @if($isFeat)<span class="pkg-featured-tag">? Most Popular</span>@endif
-    <div class="pkg-speed-tag">{{ $p['speed_mbps'] >= 1000 ? ($p['speed_mbps']/1000) . ' Gbps' : $p['speed_mbps'] . ' Mbps' }} Dedicated</div>
-    <div class="pkg-title">{{ $p['name'] }}</div>
-    <div class="pkg-desc">{{ $p['description'] ?? '' }}</div>
-    <div class="pkg-price-row">
-        <span class="pkg-currency">?</span>
-        <span class="pkg-amount">{{ number_format((float)$p['price']) }}</span>
-        <span class="pkg-period">/mo</span>
+            @if(isset($packages) && count($packages) > 0)
+                @php
+                    $mid = floor(count($packages) / 2);
+                @endphp
+                @foreach($packages as $index => $p)
+                    @php
+                        $isFeat = $index === (int)$mid;
+                        $feat = is_array($p['features']) ? $p['features'] : json_decode($p['features'] ?? '[]', true);
+                    @endphp
+                    <div class="pkg-card {{ $isFeat ? 'featured' : '' }} reveal reveal-delay-{{ $index }}">
+                        @if($isFeat)<span class="pkg-featured-tag">⭐ Most Popular</span>@endif
+                        <div class="pkg-speed-tag">{{ $p['speed_mbps'] >= 1000 ? ($p['speed_mbps']/1000) . ' Gbps' : $p['speed_mbps'] . ' Mbps' }} Dedicated</div>
+                        <div class="pkg-title">{{ $p['name'] }}</div>
+                        <div class="pkg-desc">{{ $p['description'] ?? '' }}</div>
+                        <div class="pkg-price-row">
+                            <span class="pkg-currency">৳</span>
+                            <span class="pkg-amount">{{ number_format((float)$p['price']) }}</span>
+                            <span class="pkg-period">/mo</span>
+                        </div>
+                        @if($p['btrc_approval_number'])
+                        <div class="pkg-btrc-ref">BTRC: <span>{{ $p['btrc_approval_number'] }}</span></div>
+                        @endif
+                        <ul class="pkg-features">
+                            @foreach($feat as $f)
+                                <li><span class="pkg-check"></span>{{ $f }}</li>
+                            @endforeach
+                        </ul>
+                        <a href="#contact" class="btn-pkg {{ $isFeat ? 'featured-btn' : '' }}">Get Started →</a>
+                    </div>
+                @endforeach
+            @else
+                <div style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--text-tertiary)">No packages available.</div>
+            @endif
+        </div>
     </div>
-    @if($p['btrc_approval_number'])
-    <div class="pkg-btrc-ref">BTRC: <span>{{ $p['btrc_approval_number'] }}</span></div>
-    @endif
-    <ul class="pkg-features">
-        @foreach($feat as $f)
-            <li><span class="pkg-check"></span>{{ $f }}</li>
-        @endforeach
-    </ul>
-    <a href="#contact" class="btn-pkg {{ $isFeat ? 'featured-btn' : '' }}">Get Started ?</a>
-</div>
-@endforeach
-@else
-<div style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--text-tertiary)">No packages available.</div>
-@endif
-</div>
-</div>
 </section>
 
 <!-- Removed external banner slider as it's now in hero-right -->
@@ -1281,6 +1305,13 @@
 <!-- ═══ CTA ═══ -->
 <section class="section cta" id="contact">
     <div class="container">
+        @if(!empty($settings['pay_bill_instruction']))
+        <div class="pay-bill-instruction reveal" style="background: rgba(14, 165, 233, 0.1); border: 1px solid rgba(14, 165, 233, 0.3); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 40px;">
+            <h3 style="color: var(--neon-cyan); margin-bottom: 10px; font-size: 1.2rem;">💳 {{ __('Payment Instruction') }}</h3>
+            <p style="color: var(--text-secondary); margin: 0; line-height: 1.6;">{!! nl2br(e($settings['pay_bill_instruction'])) !!}</p>
+        </div>
+        @endif
+
         <div class="cta-card reveal">
             <h2>{{ $settings['cta_heading'] }}</h2>
             <p>{{ $settings['cta_sub'] }}</p>
@@ -1389,37 +1420,6 @@
     animate();
 })();
 
-// ─── LIQUID GLASS NAV PILL ───
-(function(){
-    const links = document.querySelectorAll('.nav-link');
-    const pill = document.getElementById('navPill');
-    function movePill(el){
-        if(!el || window.innerWidth <= 900) return;
-        pill.style.width = el.offsetWidth + 'px';
-        pill.style.left = el.offsetLeft + 'px';
-        pill.style.opacity = '1';
-    }
-    links.forEach(link => {
-        link.addEventListener('mouseenter', () => movePill(link));
-        link.addEventListener('click', () => {
-            links.forEach(l => l.classList.remove('active'));
-            link.classList.add('active');
-            movePill(link);
-        });
-    });
-    const group = document.getElementById('navLinksGroup');
-    group.addEventListener('mouseleave', () => {
-        const active = document.querySelector('.nav-link.active');
-        if(active) movePill(active);
-    });
-    setTimeout(() => { const a = document.querySelector('.nav-link.active'); if(a) movePill(a); }, 100);
-
-    // Hamburger
-    document.getElementById('navHamburger').addEventListener('click', () => {
-        group.classList.toggle('open');
-    });
-})();
-
 // ─── SCROLL REVEAL ───
 (function(){
     const obs = new IntersectionObserver((entries) => {
@@ -1467,30 +1467,37 @@ statsObs.observe(document.getElementById('s1'));
     const el = document.getElementById('liveSpeedCounter');
     if(!el) return;
 
-    // Initial count-up animation
     let current = 0;
     const target = 1000;
     const duration = 2000;
     const step = target / (duration / 16);
-    const countUp = setInterval(() => {
-        current += step;
-        if (current >= target) {
-            current = target;
-            el.textContent = target.toLocaleString();
-            clearInterval(countUp);
-            // Start live fluctuation after count-up
-            startFluctuation();
-        } else {
+    let countUp;
+    
+    let lastTime = 0;
+    function animate(time) {
+        if (!lastTime) lastTime = time;
+        const delta = time - lastTime;
+        
+        if (delta >= 16) {
+            current += step;
+            if (current >= target) {
+                el.textContent = target.toLocaleString();
+                startFluctuation();
+                return;
+            }
             el.textContent = Math.floor(current).toLocaleString();
+            lastTime = time;
         }
-    }, 16);
+        countUp = requestAnimationFrame(animate);
+    }
+    countUp = requestAnimationFrame(animate);
 
     function startFluctuation() {
         setInterval(() => {
             const fluctuation = Math.floor(Math.random() * 80) - 40;
             const display = Math.max(920, Math.min(1024, target + fluctuation));
             el.textContent = display.toLocaleString();
-        }, 1800);
+        }, 2500);
     }
 })();
 
@@ -1505,10 +1512,9 @@ statsObs.observe(document.getElementById('s1'));
         el.textContent = current + 'ms';
         if(current >= target) {
             clearInterval(timer);
-            // Fluctuate live
             setInterval(() => {
                 el.textContent = (Math.floor(Math.random()*3)+2) + 'ms';
-            }, 2200);
+            }, 3000);
         }
     }, 60);
 })();
@@ -1529,51 +1535,6 @@ const speedObs = new IntersectionObserver((entries)=>{
 const speedEl = document.getElementById('speedCounter');
 if(speedEl) speedObs.observe(speedEl);
 
-
-// ─── PACKAGES ───
-async function loadPkgs(){
-    try {
-        const r = await fetch('/api/packages');
-        const d = await r.json();
-        renderPkgs(d.length ? d : null);
-    } catch(e){ renderPkgs(null); }
-}
-function renderPkgs(pkgs){
-    if(!pkgs) pkgs = [
-        {name:'Starter 5 Mbps',speed_mbps:5,price:500,btrc_approval_number:'BTRC/LL/ISP/2024/001',description:'Perfect for browsing and social media.',features:['5 Mbps Dedicated','Unlimited Data','24/7 Support','Free Installation']},
-        {name:'Home 10 Mbps',speed_mbps:10,price:900,btrc_approval_number:'BTRC/LL/ISP/2024/002',description:'Ideal for HD streaming and WFH.',features:['10 Mbps Dedicated','Unlimited Data','Priority Support','Free Router','Free Installation']},
-        {name:'Power 20 Mbps',speed_mbps:20,price:1500,btrc_approval_number:'BTRC/LL/ISP/2024/003',description:'Multiple devices & 4K streaming.',features:['20 Mbps Dedicated','Unlimited Data','Priority Support','Free Router','Static IP Available','Free Installation']},
-        {name:'Business 50 Mbps',speed_mbps:50,price:3500,btrc_approval_number:'BTRC/LL/ISP/2024/004',description:'Enterprise-grade for offices.',features:['50 Mbps Dedicated','Unlimited Data','Dedicated Manager','Static IP','SLA Guaranteed','Free Installation']},
-        {name:'Enterprise 100 Mbps',speed_mbps:100,price:6000,btrc_approval_number:'BTRC/LL/ISP/2024/005',description:'Maximum speed for large offices.',features:['100 Mbps Dedicated','Unlimited Data','24/7 NOC','Multiple Static IPs','99.9% SLA','Free Installation']},
-    ];
-    const mid = Math.floor(pkgs.length/2);
-    const grid = document.getElementById('pkgGrid');
-    grid.innerHTML = pkgs.map((p,i)=>{
-        const feat = Array.isArray(p.features) ? p.features : JSON.parse(p.features||'[]');
-        const isFeat = i===mid;
-        return `
-        <div class="pkg-card ${isFeat?'featured':''} reveal reveal-delay-${i}">
-            ${isFeat?'<span class="pkg-featured-tag">⭐ Most Popular</span>':''}
-            <div class="pkg-speed-tag">${p.speed_mbps>=1000?(p.speed_mbps/1000)+' Gbps':p.speed_mbps+' Mbps'} Dedicated</div>
-            <div class="pkg-title">${p.name}</div>
-            <div class="pkg-desc">${p.description||''}</div>
-            <div class="pkg-price-row">
-                <span class="pkg-currency">৳</span>
-                <span class="pkg-amount">${parseInt(p.price).toLocaleString()}</span>
-                <span class="pkg-period">/mo</span>
-            </div>
-            ${p.btrc_approval_number?`<div class="pkg-btrc-ref">BTRC: <span>${p.btrc_approval_number}</span></div>`:''}
-            <ul class="pkg-features">${feat.map(f=>`<li><span class="pkg-check"></span>${f}</li>`).join('')}</ul>
-            <a href="#contact" class="btn-pkg ${isFeat?'featured-btn':''}">Get Started →</a>
-        </div>`;
-    }).join('');
-    // Re-observe new reveals
-    const obs = new IntersectionObserver((entries)=>{
-        entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}});
-    },{threshold:0.08});
-    grid.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
-}
-
 // ─── NAVBAR SCROLL ───
 window.addEventListener('scroll',()=>{
     const nav = document.getElementById('glassNav');
@@ -1591,14 +1552,9 @@ async function loadMenus() {
     try {
         const r = await fetch('/api/menus?t=' + Date.now());
         const menus = await r.json();
-        
         const group = document.getElementById('navLinksGroup');
-        const pillHTML = '<div class="nav-pill" id="navPill"></div>';
-        
         let html = '';
         let buttonHtml = '';
-        
-        // Translation map for common menu items
         const trans = {
             'Home': '{{ __("Home") }}',
             'Packages': '{{ __("Packages") }}',
@@ -1703,7 +1659,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
-
-
-
-
