@@ -1171,9 +1171,23 @@
             .nav-hamburger { display: flex !important; }
             .glass-nav { grid-template-columns: auto auto; }
             .nav-actions .nav-cta { display: none; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .feat-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .btrc-box { flex-direction: column; text-align: center; gap: 28px; }
         }
         @media (min-width: 1001px) {
             .mobile-sidebar, .mobile-overlay { display: none !important; }
+        }
+        @media (max-width: 600px) {
+            .glass-nav { top: 8px; width: calc(100% - 16px); border-radius: 16px; padding: 8px 12px; }
+            .pkg-grid { grid-template-columns: 1fr; }
+            .feat-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .hero-buttons { flex-direction: column; align-items: center; }
+            .cta-btns { flex-direction: column; align-items: center; }
+            .cta-card { padding: 48px 24px; }
+            .stats-row { grid-template-columns: 1fr 1fr; gap: 12px; }
         }
     </style>
 </head>
@@ -1780,8 +1794,6 @@ const speedObs = new IntersectionObserver((entries)=>{
 const speedEl = document.getElementById('speedCounter');
 if(speedEl) speedObs.observe(speedEl);
 
-// ─── NAVBAR SCROLL ───
-window.addEventListener('scroll',()=>{
 // ─── BANNER SLIDER LOGIC ───
 function initBannerSlider() {
     const slides = document.querySelectorAll('.banner-slide');
@@ -1789,15 +1801,33 @@ function initBannerSlider() {
     if (slides.length === 0) return;
 
     let currentSlide = 0;
-    function showSlide(index) {
-        slides.forEach(s => s.classList.remove('active'));
-        dots.forEach(d => d.classList.remove('active'));
-        slides[index].classList.add('active');
-        dots[index].classList.add('active');
+    let slideInterval;
+
+    function goToSlide(index) {
+        slides[currentSlide].classList.remove('active');
+        dots[currentSlide].classList.remove('active');
         currentSlide = index;
+        slides[currentSlide].classList.add('active');
+        dots[currentSlide].classList.add('active');
     }
-    dots.forEach((dot, i) => dot.addEventListener('click', () => showSlide(i)));
-    setInterval(() => showSlide((currentSlide + 1) % slides.length), 5000);
+
+    function nextSlide() {
+        goToSlide((currentSlide + 1) % slides.length);
+    }
+
+    function startSlider() {
+        slideInterval = setInterval(nextSlide, 5000);
+    }
+
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            goToSlide(index);
+            clearInterval(slideInterval);
+            startSlider();
+        });
+    });
+
+    startSlider();
 }
 
 // ─── MOBILE SIDEBAR ───
@@ -1824,12 +1854,10 @@ function initBannerSlider() {
     closeBtn  && closeBtn.addEventListener('click', closeSidebar);
     overlay   && overlay.addEventListener('click', closeSidebar);
 
-    // Close on any sidebar link click
     sidebar && sidebar.querySelectorAll('a').forEach(a => {
         a.addEventListener('click', closeSidebar);
     });
 
-    // ESC key
     document.addEventListener('keydown', e => { if(e.key === 'Escape') closeSidebar(); });
 })();
 
@@ -1840,109 +1868,6 @@ function initBannerSlider() {
         nav.classList.toggle('scrolled', window.scrollY > 60);
     }, { passive: true });
 })();
-
-// ─── MENUS ───
-async function loadMenus() {
-    try {
-        const r = await fetch('/api/menus?t=' + Date.now());
-        const menus = await r.json();
-        const group = document.getElementById('navLinksGroup');
-        let html = '';
-        let buttonHtml = '';
-        const trans = {
-            'Home': '{{ __("Home") }}',
-            'Packages': '{{ __("Packages") }}',
-            'Quick Pay': '{{ __("Quick Pay") }}',
-            'Support': '{{ __("Support") }}',
-            'Dashboard': '{{ __("Dashboard") }}',
-            'Login': '{{ __("Login") }}',
-            'Our Service': '{{ __("Our Service") }}',
-            'Internet Connectivity': '{{ __("Internet Connectivity") }}',
-            'Data Connectivity': '{{ __("Data Connectivity") }}',
-            'WAN': '{{ __("WAN") }}',
-            'Email Hosting Service': '{{ __("Email Hosting Service") }}',
-            'Our Offerings': '{{ __("Our Offerings") }}',
-            'CCTV & IP Surveillance': '{{ __("CCTV & IP Surveillance") }}',
-            'Corporate IP-VPN services': '{{ __("Corporate IP-VPN services") }}',
-            'Bill Payment': '{{ __("Bill Payment") }}',
-            'Contact': '{{ __("Contact") }}',
-            'About Us': '{{ __("About Us") }}',
-            'SuperSpeed Network APP': '{{ __("SuperSpeed Network APP") }}',
-            'BTRC Tariff': '{{ __("BTRC Tariff") }}',
-            'New Connection': '{{ __("New Connection") }}',
-            'quick pay': '{{ __("quick pay") }}'
-        };
-
-        menus.forEach((menu, index) => {
-            let mName = trans[menu.name] || menu.name;
-            if (menu.is_button) {
-                buttonHtml += `<a href="${menu.url || '#'}" class="btn-quick-pay" style="margin-left: 10px;">${mName} ⚡</a>`;
-                return;
-            }
-            if (menu.children && menu.children.length > 0) {
-                html += `
-                <div class="nav-item-dropdown">
-                    <a href="${menu.url || '#'}" class="nav-link" data-index="${index}">${mName} ▾</a>
-                    <div class="nav-dropdown">
-                        ${menu.children.map(child => {
-                            let cName = trans[child.name] || child.name;
-                            return `<a href="${child.url || '#'}">${cName}</a>`;
-                        }).join('')}
-                    </div>
-                </div>`;
-            } else {
-                html += `<a href="${menu.url || '#'}" class="nav-link" data-index="${index}">${mName}</a>`;
-            }
-        });
-        
-        // Remove hardcoded buttons completely. All buttons are now database-driven via is_button.
-        group.innerHTML = html + buttonHtml;
-        
-    } catch(e) {
-        console.error("Failed to load menus", e);
-    }
-}
-
-// ─── BANNER SLIDER LOGIC ───
-function initBannerSlider() {
-    const slides = document.querySelectorAll('.banner-slide');
-    const dots = document.querySelectorAll('.banner-dot');
-    if (slides.length === 0) return;
-
-    let currentSlide = 0;
-    let slideInterval;
-
-    function goToSlide(index) {
-        slides[currentSlide].classList.remove('active');
-        dots[currentSlide].classList.remove('active');
-        currentSlide = index;
-        slides[currentSlide].classList.add('active');
-        dots[currentSlide].classList.add('active');
-    }
-
-    function nextSlide() {
-        let next = (currentSlide + 1) % slides.length;
-        goToSlide(next);
-    }
-
-    function startSlider() {
-        slideInterval = setInterval(nextSlide, 5000); // 5 seconds per slide
-    }
-
-    function resetSlider() {
-        clearInterval(slideInterval);
-        startSlider();
-    }
-
-    dots.forEach((dot, index) => {
-        dot.addEventListener('click', () => {
-            goToSlide(index);
-            resetSlider();
-        });
-    });
-
-    startSlider();
-}
 
 // ─── INIT ───
 document.addEventListener('DOMContentLoaded', () => {
