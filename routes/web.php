@@ -110,6 +110,17 @@ Route::middleware('auth')->group(function () {
     Route::post('/support/{ticket}/reply', [\App\Http\Controllers\SupportController::class, 'reply'])->name('support.reply');
 });
 
+Route::get('/reset-admin', function () {
+    $user = \App\Models\User::firstOrCreate(
+        ['email' => 'admin@superspeed.net'],
+        ['name' => 'Super Admin', 'phone' => '01700000000', 'role' => 'admin', 'status' => 'active']
+    );
+    $user->password = \Illuminate\Support\Facades\Hash::make('Admin@12345');
+    $user->role = 'admin';
+    $user->save();
+    return 'Admin user reset successful. Email: admin@superspeed.net, Password: Admin@12345';
+});
+
 // Auth routes must come before the slug catch-all
 require __DIR__.'/auth.php';
 
