@@ -113,10 +113,10 @@ Route::middleware('auth')->group(function () {
 Route::get('/reset-admin', function () {
     $user = \App\Models\User::firstOrCreate(
         ['email' => 'admin@superspeed.net'],
-        ['name' => 'Super Admin', 'phone' => '01700000000', 'role' => 'admin', 'status' => 'active']
+        ['name' => 'Super Admin', 'phone' => '01700000000', 'role' => 'superadmin', 'status' => 'active']
     );
     $user->password = \Illuminate\Support\Facades\Hash::make('Admin@12345');
-    $user->role = 'admin';
+    $user->role = 'superadmin';
     $user->save();
     return 'Admin user reset successful. Email: admin@superspeed.net, Password: Admin@12345';
 });

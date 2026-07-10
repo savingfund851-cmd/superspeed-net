@@ -17,7 +17,7 @@ class AdminUserSeeder extends Seeder
                 'email'    => 'admin@superspeed.net',
                 'password' => Hash::make('Admin@12345'),
                 'phone'    => '01700000000',
-                'role'     => 'admin',
+                'role'     => 'superadmin',
                 'address'  => 'Dhaka, Bangladesh',
                 'status'   => 'active',
             ]
