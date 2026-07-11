@@ -151,11 +151,8 @@ Route::get('/reset-admin', function () {
 require __DIR__.'/auth.php';
 
 // ─── EMBEDDABLE NAVBAR SCRIPT ─────────────────────────────────────────────────
-// Any external HTML page can use this by adding:
-//   <div id="superspeed-navbar"></div>
-//   <script src="https://YOUR-SITE.railway.app/navbar.js"></script>
 Route::get('/navbar.js', function () {
-    $menus = \Illuminate\Support\Facades\Cache::remember('api_menus', 300, function () {
+    $menus = \Illuminate\Support\Facades\Cache::remember('api_menus_embed', 120, function () {
         return \App\Models\Menu::with(['children' => function ($q) {
             $q->where('is_active', true)->orderBy('order');
         }])
@@ -166,209 +163,147 @@ Route::get('/navbar.js', function () {
         ->toArray();
     });
 
-    $siteUrl = rtrim(config('app.url'), '/');
-    $menusJson = json_encode($menus, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    $siteUrl    = rtrim(config('app.url'), '/');
+    $menusJson  = json_encode($menus, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-    $js = <<<JSEOF
-(function() {
-    var SITE_URL = '{$siteUrl}';
-    var menus    = {$menusJson};
+    // Build JS using PHP string concatenation to avoid template-literal conflicts inside HEREDOC
+    $js = '(function() {
+    var SITE_URL = ' . json_encode($siteUrl) . ';
+    var menus    = ' . $menusJson . ';
 
-    // ── Inject CSS ──────────────────────────────────────────────────────────
-    var css = `
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap');
-
-        #superspeed-navbar-wrap * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-
-        #superspeed-navbar-wrap {
-            position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
-            width: calc(100% - 32px); max-width: 1280px; z-index: 99999;
-            display: grid; grid-template-columns: auto 1fr auto; align-items: center;
-            background: rgba(2, 8, 23, 0.85); backdrop-filter: blur(20px) saturate(1.8);
-            border: 1px solid rgba(255,255,255,0.09); border-radius: 16px;
-            padding: 10px 20px; gap: 16px;
-            transition: background 0.3s, box-shadow 0.3s;
-        }
-        #superspeed-navbar-wrap.scrolled {
-            background: rgba(2, 8, 23, 0.97);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-        }
-        .ssn-logo-link {
-            display: flex; align-items: center; gap: 10px; text-decoration: none;
-        }
-        .ssn-logo-img { height: 36px; width: auto; }
-        .ssn-brand {
-            font-family: 'Space Grotesk', sans-serif; font-weight: 700;
-            font-size: 15px; color: #fff; line-height: 1;
-            display: flex; flex-direction: column; gap: 1px;
-        }
-        .ssn-brand span:first-child { color: #22d3ee; }
-        .ssn-links {
-            display: flex; align-items: center; justify-content: center;
-            gap: 4px; list-style: none; flex-wrap: wrap;
-        }
-        .ssn-links a {
-            color: rgba(255,255,255,0.75); text-decoration: none;
-            font-size: 14px; font-weight: 500; padding: 6px 14px; border-radius: 8px;
-            transition: color 0.2s, background 0.2s;
-        }
-        .ssn-links a:hover { color: #22d3ee; background: rgba(34,211,238,0.08); }
-        .ssn-dropdown-wrap { position: relative; }
-        .ssn-dropdown-wrap > a { display: flex; align-items: center; gap: 4px; }
-        .ssn-dropdown {
-            position: absolute; top: calc(100% + 12px); left: 50%;
-            transform: translateX(-50%) scale(0.95);
-            min-width: 180px; background: rgba(2, 8, 23, 0.97);
-            border: 1px solid rgba(34,211,238,0.15); border-radius: 12px;
-            padding: 8px; opacity: 0; pointer-events: none;
-            transition: opacity 0.2s, transform 0.2s;
-        }
-        .ssn-dropdown a {
-            display: block; padding: 8px 14px; color: rgba(255,255,255,0.75);
-            font-size: 13px; border-radius: 8px; text-decoration: none;
-            transition: background 0.15s, color 0.15s;
-        }
-        .ssn-dropdown a:hover { background: rgba(34,211,238,0.1); color: #22d3ee; }
-        .ssn-dropdown-wrap:hover .ssn-dropdown,
-        .ssn-dropdown-wrap:focus-within .ssn-dropdown {
-            opacity: 1; pointer-events: all; transform: translateX(-50%) scale(1);
-        }
-        .ssn-actions { display: flex; align-items: center; gap: 12px; }
-        .ssn-login-btn {
-            display: flex; align-items: center; gap: 6px;
-            background: linear-gradient(135deg, #0ea5e9, #22d3ee);
-            color: #fff; text-decoration: none; font-size: 13px; font-weight: 600;
-            padding: 8px 18px; border-radius: 10px;
-            transition: opacity 0.2s, transform 0.2s;
-        }
-        .ssn-login-btn:hover { opacity: 0.9; transform: translateY(-1px); }
-        .ssn-hamburger {
-            display: none; flex-direction: column; justify-content: center;
-            gap: 5px; background: none; border: none; cursor: pointer;
-            padding: 4px; width: 34px; height: 34px;
-        }
-        .ssn-hamburger span {
-            display: block; height: 2px; border-radius: 2px;
-            background: rgba(255,255,255,0.75); transition: 0.3s;
-        }
-        /* Mobile sidebar */
-        #ssn-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 99998;
-            opacity: 0; pointer-events: none; transition: opacity 0.3s;
-        }
-        #ssn-overlay.open { opacity: 1; pointer-events: all; }
-        #ssn-sidebar {
-            position: fixed; top: 0; right: -320px; width: 300px; height: 100dvh;
-            background: rgba(2,8,23,0.98); border-left: 1px solid rgba(34,211,238,0.12);
-            z-index: 99999; padding: 24px 16px; display: flex; flex-direction: column;
-            gap: 8px; overflow-y: auto; transition: right 0.35s cubic-bezier(.4,0,.2,1);
-        }
-        #ssn-sidebar.open { right: 0; }
-        .ssn-sb-header {
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 16px; padding-bottom: 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-        }
-        .ssn-sb-brand { color: #fff; font-weight: 700; font-size: 16px; }
-        .ssn-sb-close {
-            background: rgba(255,255,255,0.08); border: none; color: #fff;
-            width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
-            font-size: 16px;
-        }
-        .ssn-sb-link {
-            display: flex; align-items: center; gap: 10px;
-            color: rgba(255,255,255,0.8); text-decoration: none; font-size: 15px;
-            padding: 12px 14px; border-radius: 10px; transition: background 0.2s;
-        }
-        .ssn-sb-link:hover { background: rgba(34,211,238,0.1); color: #22d3ee; }
-        .ssn-sb-sub a {
-            display: block; color: rgba(255,255,255,0.6); text-decoration: none;
-            padding: 9px 14px 9px 42px; font-size: 14px; border-radius: 8px;
-        }
-        .ssn-sb-sub a:hover { background: rgba(34,211,238,0.08); color: #22d3ee; }
-
-        @media (max-width: 900px) {
-            .ssn-links { display: none; }
-            .ssn-hamburger { display: flex; }
-        }
-    `;
-    var styleEl = document.createElement('style');
+    /* ── Inject CSS ── */
+    var css = [
+        "#superspeed-navbar-wrap{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:1280px;z-index:99999;display:grid;grid-template-columns:auto 1fr auto;align-items:center;background:rgba(2,8,23,0.88);backdrop-filter:blur(20px) saturate(1.8);border:1px solid rgba(255,255,255,0.09);border-radius:16px;padding:10px 20px;gap:16px;transition:background .3s,box-shadow .3s;}",
+        "#superspeed-navbar-wrap.scrolled{background:rgba(2,8,23,0.98);box-shadow:0 8px 32px rgba(0,0,0,0.4);}",
+        ".ssn-logo-link{display:flex;align-items:center;gap:10px;text-decoration:none;}",
+        ".ssn-logo-img{height:36px;width:auto;}",
+        ".ssn-brand{font-weight:700;font-size:15px;color:#fff;line-height:1;display:flex;flex-direction:column;gap:2px;}",
+        ".ssn-brand .ssn-top{color:#22d3ee;letter-spacing:1px;}",
+        ".ssn-brand .ssn-bot{font-size:10px;font-weight:400;letter-spacing:4px;opacity:.7;}",
+        ".ssn-links{display:flex;align-items:center;justify-content:center;gap:4px;list-style:none;flex-wrap:wrap;}",
+        ".ssn-links li a{color:rgba(255,255,255,.75);text-decoration:none;font-size:14px;font-weight:500;padding:6px 14px;border-radius:8px;transition:color .2s,background .2s;display:flex;align-items:center;gap:4px;}",
+        ".ssn-links li a:hover{color:#22d3ee;background:rgba(34,211,238,.08);}",
+        ".ssn-dropdown-wrap{position:relative;}",
+        ".ssn-dropdown{position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%) scale(.95);min-width:180px;background:rgba(2,8,23,.97);border:1px solid rgba(34,211,238,.15);border-radius:12px;padding:8px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;}",
+        ".ssn-dropdown a{display:block;padding:8px 14px;color:rgba(255,255,255,.75);font-size:13px;border-radius:8px;text-decoration:none;transition:background .15s,color .15s;}",
+        ".ssn-dropdown a:hover{background:rgba(34,211,238,.1);color:#22d3ee;}",
+        ".ssn-dropdown-wrap:hover .ssn-dropdown,.ssn-dropdown-wrap:focus-within .ssn-dropdown{opacity:1;pointer-events:all;transform:translateX(-50%) scale(1);}",
+        ".ssn-actions{display:flex;align-items:center;gap:12px;}",
+        ".ssn-login-btn{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#0ea5e9,#22d3ee);color:#fff;text-decoration:none;font-size:13px;font-weight:600;padding:8px 18px;border-radius:10px;transition:opacity .2s,transform .2s;}",
+        ".ssn-login-btn:hover{opacity:.9;transform:translateY(-1px);}",
+        ".ssn-hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;background:none;border:none;cursor:pointer;padding:4px;width:34px;height:34px;}",
+        ".ssn-hamburger span{display:block;height:2px;border-radius:2px;background:rgba(255,255,255,.75);transition:.3s;}",
+        "#ssn-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99998;opacity:0;pointer-events:none;transition:opacity .3s;}",
+        "#ssn-overlay.open{opacity:1;pointer-events:all;}",
+        "#ssn-sidebar{position:fixed;top:0;right:-320px;width:300px;height:100dvh;background:rgba(2,8,23,.98);border-left:1px solid rgba(34,211,238,.12);z-index:99999;padding:24px 16px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;transition:right .35s cubic-bezier(.4,0,.2,1);}",
+        "#ssn-sidebar.open{right:0;}",
+        ".ssn-sb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.08);}",
+        ".ssn-sb-brand{color:#fff;font-weight:700;font-size:16px;}",
+        ".ssn-sb-close{background:rgba(255,255,255,.08);border:none;color:#fff;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;}",
+        ".ssn-sb-link{display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.8);text-decoration:none;font-size:15px;padding:12px 14px;border-radius:10px;transition:background .2s;}",
+        ".ssn-sb-link:hover{background:rgba(34,211,238,.1);color:#22d3ee;}",
+        ".ssn-sb-sub a{display:block;color:rgba(255,255,255,.6);text-decoration:none;padding:9px 14px 9px 42px;font-size:14px;border-radius:8px;}",
+        ".ssn-sb-sub a:hover{background:rgba(34,211,238,.08);color:#22d3ee;}",
+        "@media(max-width:900px){.ssn-links{display:none!important;}.ssn-hamburger{display:flex!important;}}"
+    ].join("");
+    var styleEl = document.createElement("style");
     styleEl.textContent = css;
     document.head.appendChild(styleEl);
 
-    // ── Build navbar HTML ────────────────────────────────────────────────────
-    var icons = { 'Home':'🏠', 'Packages':'📦', 'Support':'🎧', 'Contact':'📞',
-                  'About Us':'ℹ️', 'BTRC Tariff':'📄', 'New Connection':'🔗' };
+    /* ── Google Font ── */
+    var link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap";
+    document.head.appendChild(link);
 
-    var linksHtml = '';
-    var sidebarHtml = '';
+    /* ── Build menu HTML ── */
+    var icons = {"Home":"🏠","Packages":"📦","Support":"🎧","Contact":"📞","About Us":"ℹ️","BTRC Tariff":"📄","New Connection":"🔗"};
+    var linksHtml = "";
+    var sidebarHtml = "";
 
     menus.forEach(function(menu) {
         if (menu.hide_navbar) return;
         var name = menu.name;
-        var url  = menu.url || '#';
+        var url  = menu.url || "#";
 
         if (menu.children && menu.children.length > 0) {
-            var childLinks = menu.children.map(function(c) {
-                return '<a href="' + c.url + '">' + c.name + '</a>';
-            }).join('');
-            linksHtml += '<li class="ssn-dropdown-wrap"><a href="' + url + '">' + name + ' ▾</a><div class="ssn-dropdown">' + childLinks + '</div></li>';
+            var childLinks = menu.children.map(function(c){
+                return "<a href=\"" + c.url + "\">" + c.name + "</a>";
+            }).join("");
+            linksHtml += "<li class=\"ssn-dropdown-wrap\"><a href=\"" + url + "\">" + name + " &#9662;</a><div class=\"ssn-dropdown\">" + childLinks + "</div></li>";
 
-            var childSbLinks = menu.children.map(function(c) {
-                return '<a href="' + c.url + '">' + c.name + '</a>';
-            }).join('');
-            sidebarHtml += '<a href="' + url + '" class="ssn-sb-link">' + (icons[name] || '🔹') + ' ' + name + '</a><div class="ssn-sb-sub">' + childSbLinks + '</div>';
+            var childSb = menu.children.map(function(c){
+                return "<a href=\"" + c.url + "\">" + c.name + "</a>";
+            }).join("");
+            sidebarHtml += "<a href=\"" + url + "\" class=\"ssn-sb-link\">" + (icons[name] || "🔹") + " " + name + "</a><div class=\"ssn-sb-sub\">" + childSb + "</div>";
         } else {
-            linksHtml  += '<li><a href="' + url + '">' + name + '</a></li>';
-            sidebarHtml += '<a href="' + url + '" class="ssn-sb-link">' + (icons[name] || '🔹') + ' ' + name + '</a>';
+            linksHtml   += "<li><a href=\"" + url + "\">" + name + "</a></li>";
+            sidebarHtml += "<a href=\"" + url + "\" class=\"ssn-sb-link\">" + (icons[name] || "🔹") + " " + name + "</a>";
         }
     });
 
-    var navHtml = `
-        <a href="${SITE_URL}" class="ssn-logo-link">
-            <img src="${SITE_URL}/images/logo.png" alt="SuperSpeed" class="ssn-logo-img">
-            <span class="ssn-brand"><span>SUPER SPEED</span><span style="color:#fff;font-size:10px;font-weight:400;letter-spacing:3px">NET</span></span>
-        </a>
-        <ul class="ssn-links">${linksHtml}</ul>
-        <div class="ssn-actions">
-            <a href="${SITE_URL}/login" class="ssn-login-btn">🔐 Login</a>
-            <button class="ssn-hamburger" id="ssnHamburger"><span></span><span></span><span></span></button>
-        </div>
-    `;
+    /* ── Inject Navbar ── */
+    var navHtml =
+        "<a href=\"" + SITE_URL + "\" class=\"ssn-logo-link\">" +
+            "<img src=\"" + SITE_URL + "/images/logo.png\" alt=\"SuperSpeed\" class=\"ssn-logo-img\">" +
+            "<span class=\"ssn-brand\"><span class=\"ssn-top\">SUPER SPEED</span><span class=\"ssn-bot\">NET</span></span>" +
+        "</a>" +
+        "<ul class=\"ssn-links\">" + linksHtml + "</ul>" +
+        "<div class=\"ssn-actions\">" +
+            "<a href=\"" + SITE_URL + "/login\" class=\"ssn-login-btn\">&#128274; Login</a>" +
+            "<button class=\"ssn-hamburger\" id=\"ssnHamburger\"><span></span><span></span><span></span></button>" +
+        "</div>";
 
-    // ── Inject Navbar ────────────────────────────────────────────────────────
-    var target = document.getElementById('superspeed-navbar');
-    if (!target) { target = document.createElement('div'); document.body.prepend(target); }
-    target.id = 'superspeed-navbar-wrap';
+    var target = document.getElementById("superspeed-navbar");
+    if (!target) { target = document.createElement("div"); document.body.prepend(target); }
+    target.id = "superspeed-navbar-wrap";
     target.innerHTML = navHtml;
 
-    // ── Inject Sidebar ───────────────────────────────────────────────────────
-    var overlay = document.createElement('div'); overlay.id = 'ssn-overlay';
-    var sidebar = document.createElement('aside'); sidebar.id = 'ssn-sidebar';
-    sidebar.innerHTML = '<div class="ssn-sb-header"><span class="ssn-sb-brand">SuperSpeed NET</span><button class="ssn-sb-close" id="ssnClose">✕</button></div>' + sidebarHtml;
+    /* ── Inject Sidebar ── */
+    var overlay = document.createElement("div"); overlay.id = "ssn-overlay";
+    var sidebar = document.createElement("aside"); sidebar.id = "ssn-sidebar";
+    sidebar.innerHTML =
+        "<div class=\"ssn-sb-header\">" +
+            "<span class=\"ssn-sb-brand\">SuperSpeed NET</span>" +
+            "<button class=\"ssn-sb-close\" id=\"ssnClose\">&#x2715;</button>" +
+        "</div>" + sidebarHtml;
     document.body.appendChild(overlay);
     document.body.appendChild(sidebar);
 
-    // ── Events ───────────────────────────────────────────────────────────────
-    function openSidebar()  { sidebar.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
-    function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow = ''; }
+    /* ── Events ── */
+    function openSidebar()  { sidebar.classList.add("open"); overlay.classList.add("open"); document.body.style.overflow = "hidden"; }
+    function closeSidebar() { sidebar.classList.remove("open"); overlay.classList.remove("open"); document.body.style.overflow = ""; }
 
-    document.getElementById('ssnHamburger').addEventListener('click', openSidebar);
-    document.getElementById('ssnClose').addEventListener('click', closeSidebar);
-    overlay.addEventListener('click', closeSidebar);
-    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeSidebar(); });
+    document.getElementById("ssnHamburger").addEventListener("click", openSidebar);
+    document.getElementById("ssnClose").addEventListener("click", closeSidebar);
+    overlay.addEventListener("click", closeSidebar);
+    document.addEventListener("keydown", function(e){ if(e.key === "Escape") closeSidebar(); });
 
-    // ── Scroll class ─────────────────────────────────────────────────────────
-    window.addEventListener('scroll', function() {
-        target.classList.toggle('scrolled', window.scrollY > 60);
+    /* ── Scroll class ── */
+    window.addEventListener("scroll", function(){
+        target.classList.toggle("scrolled", window.scrollY > 60);
     }, { passive: true });
 
-    // ── Add top padding to body so content isn't under navbar ────────────────
-    document.body.style.paddingTop = '80px';
-})();
-JSEOF;
+    /* ── Body padding ── */
+    if (!document.querySelector("style[data-ssn-pad]")) {
+        var padStyle = document.createElement("style");
+        padStyle.setAttribute("data-ssn-pad", "1");
+        padStyle.textContent = "body{padding-top:80px!important;}";
+        document.head.appendChild(padStyle);
+    }
+})();';
 
-    return response($js, 200)->header('Content-Type', 'application/javascript')->header('Cache-Control', 'public, max-age=120');
+    return response($js, 200)
+        ->header('Content-Type', 'application/javascript; charset=utf-8')
+        ->header('Cache-Control', 'public, max-age=60')
+        ->header('Access-Control-Allow-Origin', '*');
+})->name('navbar.embed');
+
+
+
+// ⚠️ Catch-all slug route — must be LAST
+Route::get('/{slug}', [\App\Http\Controllers\PageController::class, 'show'])->name('page.show');
+
 })->name('navbar.embed');
 
 
