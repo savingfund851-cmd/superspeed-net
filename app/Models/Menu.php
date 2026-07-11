@@ -15,6 +15,7 @@ class Menu extends Model
         'order',
         'is_active',
         'is_button',
+        'hide_navbar',
     ];
 
     protected $casts = [

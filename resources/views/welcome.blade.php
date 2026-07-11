@@ -1287,6 +1287,21 @@
     <canvas id="particleCanvas"></canvas>
 </div>
 
+@php
+    $currentUrl = '/' . request()->path();
+    if($currentUrl === '//') $currentUrl = '/';
+    $shouldHideNavbar = false;
+    if(isset($menus)) {
+        foreach($menus as $menu) {
+            if($menu['url'] === $currentUrl && !empty($menu['hide_navbar'])) {
+                $shouldHideNavbar = true;
+                break;
+            }
+        }
+    }
+@endphp
+
+@if(!$shouldHideNavbar)
 <!-- ═══ PREMIUM NAVBAR ═══ -->
 <nav class="glass-nav" id="glassNav">
     <!-- Left: Logo + Brand -->
@@ -1396,6 +1411,7 @@
         </div>
     </div>
 </aside>
+@endif
 
 
 <!-- ═══ HERO ═══ -->

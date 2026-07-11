@@ -50,6 +50,10 @@ class MenuResource extends Resource
                     ->label('Show as Button')
                     ->helperText('Enable this to render the link as a special Quick Pay button')
                     ->default(false),
+                Forms\Components\Toggle::make('hide_navbar')
+                    ->label('Hide Navbar')
+                    ->helperText('Hide the top navigation bar when users visit this menu URL (useful for landing pages)')
+                    ->default(false),
             ]);
     }
 

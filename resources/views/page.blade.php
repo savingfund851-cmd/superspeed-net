@@ -833,6 +833,28 @@ async function loadMenus() {
         const r = await fetch('/api/menus?t=' + Date.now());
         const menus = await r.json();
         
+        const currentPath = window.location.pathname;
+        let hideNavbar = false;
+        
+        // Check if current URL is in menus with hide_navbar = true
+        for (let i = 0; i < menus.length; i++) {
+            if ((menus[i].url === currentPath || menus[i].url === currentPath.substring(1)) && menus[i].hide_navbar) {
+                hideNavbar = true;
+                break;
+            }
+        }
+        
+        if (hideNavbar) {
+            const nav = document.getElementById('glassNav');
+            const overlay = document.getElementById('mobileOverlay');
+            const sidebar = document.getElementById('mobileSidebar');
+            if(nav) nav.style.display = 'none';
+            if(overlay) overlay.style.display = 'none';
+            if(sidebar) sidebar.style.display = 'none';
+            // We can return early to skip rendering menus
+            return;
+        }
+        
         const group = document.getElementById('navLinksGroup');
         
         let html = '';
