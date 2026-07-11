@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us | SuperSpeed Net</title>
+<style>
+  :root{
+    --blue:#2E7CF6;
+    --blue-deep:#1450D8;
+    --cyan:#6FD5FF;
+    --navy:#080B14;
+    --navy2:#0D1424;
+    --panel:#111A2E;
+    --line:rgba(255,255,255,0.08);
+    --text-dim:#8A93A6;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Segoe UI',Arial,sans-serif;
+    background:var(--navy);
+  }
+
+  .hero{
+    position:relative;
+    overflow:hidden;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(46,124,246,0.18), transparent 45%),
+      radial-gradient(circle at 88% 75%, rgba(0,217,255,0.12), transparent 50%),
+      linear-gradient(160deg,#080B14 0%, #0D1424 55%, #0A1020 100%);
+    padding:72px 60px;
+    min-height:500px;
+  }
+
+  /* circuit grid backdrop */
+  .grid-bg{
+    position:absolute;
+    inset:0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:46px 46px;
+    opacity:.35;
+    mask-image:radial-gradient(ellipse at center, black 10%, transparent 75%);
+  }
+
+  .glow-orb{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(10px);
+  }
+  .glow-orb.o1{
+    width:360px;height:360px;
+    top:-160px;left:-140px;
+    background:radial-gradient(circle, rgba(46,124,246,0.38), transparent 70%);
+  }
+  .glow-orb.o2{
+    width:420px;height:420px;
+    bottom:-220px;right:-160px;
+    background:radial-gradient(circle, rgba(0,217,255,0.22), transparent 70%);
+  }
+
+  .content-wrap{
+    position:relative;
+    z-index:2;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:44px;
+    max-width:1400px;
+    margin:0 auto;
+    flex-wrap:wrap;
+  }
+
+  .left{
+    flex:1 1 500px;
+    min-width:320px;
+  }
+
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 16px;
+    border-radius:30px;
+    background:rgba(46,124,246,0.12);
+    border:1px solid rgba(46,124,246,0.38);
+    color:var(--blue);
+    font-size:12.5px;
+    font-weight:700;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    margin-bottom:24px;
+  }
+  .badge .pulse-dot{
+    width:8px;height:8px;
+    border-radius:50%;
+    background:#3CE27A;
+    box-shadow:0 0 0 0 rgba(60,226,122,0.6);
+    animation:pulse 1.8s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(60,226,122,0.55);}
+    70%{box-shadow:0 0 0 8px rgba(60,226,122,0);}
+    100%{box-shadow:0 0 0 0 rgba(60,226,122,0);}
+  }
+
+  h1{
+    font-size:56px;
+    line-height:1.06;
+    font-weight:800;
+    color:#fff;
+    letter-spacing:-1px;
+  }
+  h1 span{
+    background:linear-gradient(90deg,var(--blue),var(--cyan));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+
+  .subtitle{
+    margin-top:18px;
+    font-size:18px;
+    font-weight:500;
+    color:var(--text-dim);
+    max-width:480px;
+    line-height:1.6;
+  }
+
+  .features{
+    display:flex;
+    gap:16px;
+    margin-top:36px;
+    flex-wrap:wrap;
+  }
+  .feature{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px 18px;
+    border-radius:14px;
+    background:var(--panel);
+    border:1px solid var(--line);
+  }
+  .feature .icon-circle{
+    width:42px;height:42px;
+    border-radius:10px;
+    background:rgba(46,124,246,0.14);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .feature .icon-circle svg{width:22px;height:22px;stroke:var(--blue);}
+  .feature-text{
+    font-size:14px;
+    font-weight:700;
+    color:#fff;
+    line-height:1.25;
+  }
+  .feature-text small{
+    display:block;
+    font-size:11.5px;
+    font-weight:500;
+    color:var(--text-dim);
+  }
+
+  .cta-row{
+    margin-top:40px;
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .btn{
+    padding:16px 30px;
+    border-radius:12px;
+    font-weight:700;
+    font-size:15px;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary{
+    background:linear-gradient(90deg,var(--blue-deep),var(--blue));
+    color:#fff;
+    box-shadow:0 12px 28px rgba(46,124,246,0.35);
+  }
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(46,124,246,0.45);}
+  .btn-outline{
+    background:transparent;
+    color:#fff;
+    border:1.5px solid var(--line);
+  }
+  .btn-outline:hover{transform:translateY(-2px);border-color:var(--cyan);color:var(--cyan);}
+
+  /* RIGHT SIDE */
+  .right{
+    flex:1 1 420px;
+    min-width:300px;
+    position:relative;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:440px;
+  }
+
+  .orb-ring{
+    position:relative;
+    width:300px;height:300px;
+    border-radius:50%;
+    border:1px solid rgba(46,124,246,0.28);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .orb-ring::before{
+    content:"";
+    position:absolute;
+    inset:-40px;
+    border-radius:50%;
+    border:1px dashed rgba(0,217,255,0.2);
+    animation:spin 30s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .orb-core{
+    width:200px;height:200px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #1B2740, #0A1020 75%);
+    border:1px solid rgba(46,124,246,0.38);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 0 60px rgba(46,124,246,0.28), inset 0 0 30px rgba(0,217,255,0.1);
+  }
+  .orb-core svg{width:88px;height:88px;stroke:var(--blue);}
+
+  .floating-icon{
+    position:absolute;
+    width:56px;height:56px;
+    border-radius:14px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 10px 24px rgba(0,0,0,0.35);
+  }
+  .floating-icon svg{width:24px;height:24px;stroke:var(--cyan);}
+  .fi-1{top:2%;left:6%;}
+  .fi-2{top:12%;right:0%;}
+  .fi-3{bottom:6%;left:0%;}
+  .fi-4{bottom:0%;right:10%;}
+
+  .chat-card{
+    position:absolute;
+    right:-14px;
+    bottom:-24px;
+    width:290px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:18px;
+    box-shadow:0 30px 60px rgba(0,0,0,0.5);
+    overflow:hidden;
+  }
+  .chat-header{
+    background:linear-gradient(120deg,var(--blue-deep),var(--blue));
+    padding:16px 18px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    color:#fff;
+  }
+  .chat-avatar{
+    width:34px;height:34px;
+    border-radius:9px;
+    background:rgba(255,255,255,0.25);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;
+    font-size:12px;
+  }
+  .chat-header .name{font-weight:800;font-size:13.5px;}
+  .chat-header .status{
+    font-size:11px;
+    opacity:.9;
+    display:flex;align-items:center;gap:5px;
+  }
+  .status .dot{width:7px;height:7px;border-radius:50%;background:#3CE27A;display:inline-block;}
+  .chat-close{margin-left:auto;opacity:.85;font-size:14px;}
+
+  .chat-body{
+    padding:16px 16px 8px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    background:#0D1424;
+  }
+  .chat-bubble{
+    display:flex;
+    gap:8px;
+    align-items:flex-start;
+  }
+  .chat-bubble .mini-avatar{
+    width:24px;height:24px;
+    border-radius:7px;
+    background:var(--blue);
+    color:#fff;
+    font-size:9px;
+    font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    margin-top:2px;
+  }
+  .chat-bubble p{
+    background:#141D31;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:10px 12px;
+    font-size:12px;
+    line-height:1.5;
+    color:#C7CEDB;
+  }
+
+  .chat-quick{
+    display:flex;
+    gap:7px;
+    padding:0 16px 14px;
+    flex-wrap:wrap;
+  }
+  .quick-btn{
+    border:1px solid var(--line);
+    background:#141D31;
+    border-radius:16px;
+    padding:7px 11px;
+    font-size:11px;
+    font-weight:700;
+    color:#fff;
+    display:flex;align-items:center;gap:5px;
+  }
+  .quick-btn.filled{
+    background:var(--cyan);
+    color:#04202A;
+    border-color:var(--cyan);
+  }
+
+  .chat-input{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:10px 14px;
+    border-top:1px solid var(--line);
+  }
+  .chat-input input{
+    flex:1;
+    border:none;
+    outline:none;
+    font-size:12px;
+    color:#6B7387;
+    background:transparent;
+  }
+  .send-btn{
+    width:30px;height:30px;
+    border-radius:8px;
+    background:var(--blue);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .send-btn svg{width:14px;height:14px;stroke:#fff;fill:#fff;}
+  .powered{
+    text-align:center;
+    font-size:9.5px;
+    color:#4A5268;
+    padding-bottom:10px;
+  }
+
+  @media(max-width:960px){
+    .hero{padding:50px 22px;}
+    h1{font-size:36px;}
+    .right{min-height:auto;padding-top:20px;}
+    .chat-card{position:static;margin:26px auto 0;width:100%;max-width:300px;}
+    .floating-icon{display:none;}
+    .orb-ring{width:220px;height:220px;}
+    .orb-core{width:150px;height:150px;}
+    .orb-core svg{width:60px;height:60px;}
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="grid-bg"></div>
+  <div class="glow-orb o1"></div>
+  <div class="glow-orb o2"></div>
+
+  <div class="content-wrap">
+    <!-- LEFT -->
+    <div class="left">
+      <div class="badge">
+        <span class="pulse-dot"></span>
+        BTRC Licensed ISP — Live Support
+      </div>
+
+      <h1>Customer <span>Support</span></h1>
+
+      <p class="subtitle">
+        Fast, friendly &amp; always ready to help. Our 24/7 NOC team keeps your dedicated fiber connection running without interruption.
+      </p>
+
+      <div class="features">
+        <div class="feature">
+          <div class="icon-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15 15"></polyline></svg>
+          </div>
+          <div class="feature-text">24/7 Support<small>Always online</small></div>
+        </div>
+        <div class="feature">
+          <div class="icon-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          </div>
+          <div class="feature-text">Live Assistance<small>Real NOC team</small></div>
+        </div>
+        <div class="feature">
+          <div class="icon-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 11-14h-7l1-6z"></path></svg>
+          </div>
+          <div class="feature-text">Quick Solution<small>Fast resolution</small></div>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <a href="tel:016-80688836" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          016-80688836
+        </a>
+        <a href="https://wa.me/01680688836" class="btn btn-outline">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          WhatsApp Us
+        </a>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+      <div class="floating-icon fi-1">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+      </div>
+      <div class="floating-icon fi-2">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M22 6l-10 7L2 6"></path></svg>
+      </div>
+      <div class="floating-icon fi-3">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+      </div>
+      <div class="floating-icon fi-4">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+      </div>
+
+      <div class="orb-ring">
+        <div class="orb-core">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+        </div>
+      </div>
+
+      <div class="chat-card">
+        <div class="chat-header">
+          <div class="chat-avatar">SSN</div>
+          <div>
+            <div class="name">SuperSpeed Net</div>
+            <div class="status"><span class="dot"></span> Live chat connected</div>
+          </div>
+          <div class="chat-close">✕</div>
+        </div>
+        <div class="chat-body">
+          <div class="chat-bubble">
+            <div class="mini-avatar">SSN</div>
+            <p>Hi there! 👋 Welcome to SuperSpeed Net support.</p>
+          </div>
+          <div class="chat-bubble">
+            <div class="mini-avatar">SSN</div>
+            <p>Ask about packages, billing, or connection issues — or reach our 24/7 NOC team directly.</p>
+          </div>
+        </div>
+        <div class="chat-quick">
+          <div class="quick-btn">📶 Packages</div>
+          <div class="quick-btn">📞 Call NOC</div>
+          <div class="quick-btn filled">💬 WhatsApp</div>
+        </div>
+        <div class="chat-input">
+          <input type="text" placeholder="Type a message...">
+          <div class="send-btn">
+            <svg viewBox="0 0 24 24"><path d="M22 2L11 13"></path><path d="M22 2l-7 20-4-9-9-4 20-7z"></path></svg>
+          </div>
+        </div>
+        <div class="powered">Powered by SuperSpeed Net Live Support</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
