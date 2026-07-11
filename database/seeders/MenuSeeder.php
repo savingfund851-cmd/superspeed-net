@@ -9,6 +9,12 @@ class MenuSeeder extends Seeder
 {
     public function run(): void
     {
+        // ⚡ Only seed if the menus table is completely empty.
+        // This prevents admin panel changes from being overwritten on every deploy.
+        if (\App\Models\Menu::count() > 0) {
+            return;
+        }
+
         $menus = [
             ['name' => 'Home', 'url' => '/', 'order' => 1],
             ['name' => 'Packages', 'url' => '#packages', 'order' => 2],

@@ -30,6 +30,11 @@ class PageSeeder extends Seeder
             ]
         ];
 
+        // ⚡ Only seed if the pages table is completely empty.
+        if (\App\Models\Page::count() > 0) {
+            return;
+        }
+
         foreach ($pages as $pageData) {
             $pageData['slug'] = Str::slug($pageData['title']);
             Page::updateOrCreate(['slug' => $pageData['slug']], $pageData);

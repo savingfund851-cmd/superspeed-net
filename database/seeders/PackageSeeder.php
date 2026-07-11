@@ -67,6 +67,11 @@ class PackageSeeder extends Seeder
             ],
         ];
 
+        // ⚡ Only seed if the packages table is completely empty.
+        if (\App\Models\Package::count() > 0) {
+            return;
+        }
+
         foreach ($packages as $package) {
             Package::updateOrCreate(['name' => $package['name']], $package);
         }
