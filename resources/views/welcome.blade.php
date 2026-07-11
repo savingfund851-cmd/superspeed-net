@@ -1189,6 +1189,90 @@
             .cta-card { padding: 48px 24px; }
             .stats-row { grid-template-columns: 1fr 1fr; gap: 12px; }
         }
+        /* ════ PAYMENT INSTRUCTION BOX ════ */
+        .pay-bill-glass-box {
+            position: relative;
+            background: linear-gradient(145deg, rgba(14, 165, 233, 0.05) 0%, rgba(14, 165, 233, 0.15) 100%);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+            border-radius: 20px;
+            padding: 30px 40px;
+            margin-bottom: 50px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            box-shadow: 0 10px 40px -10px rgba(14, 165, 233, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .pay-bill-glass-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px -10px rgba(14, 165, 233, 0.2);
+            border-color: rgba(34, 211, 238, 0.4);
+        }
+        .pay-bill-icon-wrapper {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--neon-cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            flex-shrink: 0;
+            z-index: 2;
+        }
+        .pay-bill-pulse {
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
+            background: var(--neon-cyan);
+            opacity: 0.3;
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+            z-index: -1;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        .pay-bill-content h3 {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            font-family: 'Space Grotesk', sans-serif;
+            background: linear-gradient(90deg, #fff, var(--neon-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .pay-bill-content p {
+            color: var(--text-secondary);
+            font-size: 16px;
+            line-height: 1.7;
+            margin: 0;
+        }
+        .highlight-number {
+            display: inline-block;
+            background: rgba(34, 211, 238, 0.15);
+            color: var(--neon-cyan);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: 1px;
+            border: 1px dashed rgba(34, 211, 238, 0.4);
+            margin: 0 4px;
+        }
+        @media (max-width: 600px) {
+            .pay-bill-glass-box {
+                flex-direction: column;
+                text-align: center;
+                padding: 30px 20px;
+                gap: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1370,7 +1454,7 @@
                 <span class="hero-gradient-text">{{ __('Fastest Fiber') }}</span>
                 {{ __('Internet') }}
             </h1>
-            <p class="hero-sub">{{ __('Blazing-fast dedicated bandwidth with zero throttling. Powering homes and businesses across Bangladesh with enterprise-grade fiber.') }}</p>
+            <p class="hero-sub">{{ $hero_description ?? 'Blazing-fast dedicated bandwidth with zero throttling. Powering homes and businesses across Bangladesh with enterprise-grade fiber.' }}</p>
             <div class="hero-buttons">
                 <a href="#packages" class="btn-hero-primary">🚀 {{ __('View Packages') }}</a>
                 <a href="#contact" class="btn-hero-glass">📞 {{ __('Free Consultation') }}</a>

@@ -18,6 +18,7 @@ Route::get('/', function () {
         'site_address'     => $S('site_address', ''),
         // ── Hero ──
         'hero_subtitle'       => $S('hero_subtitle', "Bangladesh's Fastest Fiber Internet"),
+        'hero_description'    => $S('hero_description', "Blazing-fast dedicated bandwidth with zero throttling. Powering homes and businesses across Bangladesh with enterprise-grade fiber."),
         'hero_network_speed'  => $S('hero_network_speed', '1024'),
         'hero_uptime'         => $S('hero_uptime', '99.9%'),
         'hero_latency'        => $S('hero_latency', '2ms'),

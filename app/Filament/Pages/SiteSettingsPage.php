@@ -36,6 +36,7 @@ class SiteSettingsPage extends Page
             'site_phone'       => $S('site_phone', '+880 1700-000000'),
             'site_address'     => $S('site_address', ''),
             'hero_subtitle'    => $S('hero_subtitle', "Bangladesh's Fastest Fiber Internet"),
+            'hero_description' => $S('hero_description', "Blazing-fast dedicated bandwidth with zero throttling. Powering homes and businesses across Bangladesh with enterprise-grade fiber."),
             'hero_network_speed' => $S('hero_network_speed', '1,024'),
             'hero_uptime'      => $S('hero_uptime', '99.9%'),
             'hero_latency'     => $S('hero_latency', '2ms'),
@@ -113,6 +114,7 @@ Payment number: 01608430537'),
                                 Forms\Components\Section::make('Hero Section')
                                     ->schema([
                                         Forms\Components\TextInput::make('hero_subtitle')->label('Hero Subtitle'),
+                                        Forms\Components\Textarea::make('hero_description')->label('Hero Description')->rows(3),
                                         Forms\Components\Grid::make(2)->schema([
                                             Forms\Components\TextInput::make('hero_network_speed')->label('Network Speed Target (e.g., 1024)'),
                                             Forms\Components\TextInput::make('hero_uptime')->label('Uptime SLA (e.g., 99.9%)'),
