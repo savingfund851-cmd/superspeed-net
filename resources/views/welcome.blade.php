@@ -1649,9 +1649,21 @@
 <section class="section cta" id="contact">
     <div class="container">
         @if(!empty($settings['pay_bill_instruction']))
-        <div class="pay-bill-instruction reveal" style="background: rgba(14, 165, 233, 0.1); border: 1px solid rgba(14, 165, 233, 0.3); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 40px;">
-            <h3 style="color: var(--neon-cyan); margin-bottom: 10px; font-size: 1.2rem;">💳 {{ __('Payment Instruction') }}</h3>
-            <p style="color: var(--text-secondary); margin: 0; line-height: 1.6;">{!! nl2br(e($settings['pay_bill_instruction'])) !!}</p>
+        <div class="pay-bill-glass-box reveal">
+            <div class="pay-bill-icon-wrapper">
+                <span class="pay-bill-icon">💳</span>
+                <div class="pay-bill-pulse"></div>
+            </div>
+            <div class="pay-bill-content">
+                <h3>{{ __('Payment Instruction') }}</h3>
+                <p>
+                    @php
+                        $instruction = e($settings['pay_bill_instruction']);
+                        $instruction = preg_replace('/(01[3-9]\d{8})/', '<span class="highlight-number">$1</span>', $instruction);
+                        echo nl2br($instruction);
+                    @endphp
+                </p>
+            </div>
         </div>
         @endif
 
