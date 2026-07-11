@@ -27,6 +27,7 @@ RUN docker-php-ext-install \
     pdo_mysql \
     xml \
     zip \
+    pcntl \
     opcache
 
 # Enable sodium
@@ -55,10 +56,14 @@ RUN chmod -R 775 storage bootstrap/cache
 # Expose port
 EXPOSE 8000
 
+# Set environment variable for built-in PHP server workers
+ENV PHP_CLI_SERVER_WORKERS=4
+
 # Start command: migrate, seed, serve
 CMD php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache && \
+    php artisan filament:optimize && \
     php artisan migrate --force && \
     php artisan db:seed --force && \
     php artisan storage:link && \
