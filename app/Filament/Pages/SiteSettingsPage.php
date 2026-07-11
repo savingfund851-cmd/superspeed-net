@@ -36,6 +36,10 @@ class SiteSettingsPage extends Page
             'site_phone'       => $S('site_phone', '+880 1700-000000'),
             'site_address'     => $S('site_address', ''),
             'hero_subtitle'    => $S('hero_subtitle', "Bangladesh's Fastest Fiber Internet"),
+            'hero_network_speed' => $S('hero_network_speed', '1,024'),
+            'hero_uptime'      => $S('hero_uptime', '99.9%'),
+            'hero_latency'     => $S('hero_latency', '2ms'),
+            'hero_active_clients' => $S('hero_active_clients', '1,200+'),
             'packages_heading' => $S('packages_heading', 'Choose Your Perfect Plan'),
             'packages_sub'     => $S('packages_sub', 'All packages include unlimited data, free installation, and BTRC regulatory compliance.'),
             'features_chip'    => $S('features_chip', 'Why Choose Us'),
@@ -109,6 +113,12 @@ Payment number: 01608430537'),
                                 Forms\Components\Section::make('Hero Section')
                                     ->schema([
                                         Forms\Components\TextInput::make('hero_subtitle')->label('Hero Subtitle'),
+                                        Forms\Components\Grid::make(2)->schema([
+                                            Forms\Components\TextInput::make('hero_network_speed')->label('Network Speed Target (e.g., 1024)'),
+                                            Forms\Components\TextInput::make('hero_uptime')->label('Uptime SLA (e.g., 99.9%)'),
+                                            Forms\Components\TextInput::make('hero_latency')->label('Avg. Latency (e.g., 2ms)'),
+                                            Forms\Components\TextInput::make('hero_active_clients')->label('Active Clients (e.g., 1,200+)'),
+                                        ]),
                                     ]),
 
                                 Forms\Components\Section::make('Packages Section')

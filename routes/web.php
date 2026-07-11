@@ -17,7 +17,11 @@ Route::get('/', function () {
         'site_email'       => $S('site_email', 'info@superspeed.net'),
         'site_address'     => $S('site_address', ''),
         // ── Hero ──
-        'hero_subtitle'    => $S('hero_subtitle', "Bangladesh's Fastest Fiber Internet"),
+        'hero_subtitle'       => $S('hero_subtitle', "Bangladesh's Fastest Fiber Internet"),
+        'hero_network_speed'  => $S('hero_network_speed', '1024'),
+        'hero_uptime'         => $S('hero_uptime', '99.9%'),
+        'hero_latency'        => $S('hero_latency', '2ms'),
+        'hero_active_clients' => $S('hero_active_clients', '1,200+'),
         // ── Packages ──
         'packages_heading' => $S('packages_heading', 'Choose Your Perfect Plan'),
         'packages_sub'     => $S('packages_sub', 'All packages include unlimited data, free installation, and BTRC regulatory compliance.'),

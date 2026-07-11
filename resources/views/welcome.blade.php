@@ -1379,7 +1379,7 @@
             <!-- Live Speed Counter Panel -->
             <div class="hero-speed-panel">
                 <div class="speed-counter-box">
-                    <div class="speed-val" id="liveSpeedCounter">0</div>
+                    <div class="speed-val" id="liveSpeedCounter" data-target="{{ preg_replace('/[^0-9]/', '', $hero_network_speed ?? '1024') }}">0</div>
                     <div class="speed-unit-text">{{ __('Mbps') }}</div>
                     <div class="speed-label">⚡ {{ __('Network Speed') }}</div>
                 </div>
@@ -1387,21 +1387,21 @@
                     <div class="mini-stat">
                         <span class="mini-stat-icon">🟢</span>
                         <div>
-                            <div class="mini-stat-val">99.9%</div>
+                            <div class="mini-stat-val">{{ $hero_uptime ?? '99.9%' }}</div>
                             <div class="mini-stat-lbl">{{ __('Uptime SLA') }}</div>
                         </div>
                     </div>
                     <div class="mini-stat">
                         <span class="mini-stat-icon">⚡</span>
                         <div>
-                            <div class="mini-stat-val" id="latencyCounter">0ms</div>
+                            <div class="mini-stat-val" id="latencyCounter" data-target="{{ preg_replace('/[^0-9]/', '', $hero_latency ?? '2') }}">0ms</div>
                             <div class="mini-stat-lbl">{{ __('Avg. Latency') }}</div>
                         </div>
                     </div>
                     <div class="mini-stat">
                         <span class="mini-stat-icon">🌐</span>
                         <div>
-                            <div class="mini-stat-val" id="clientCounter">0+</div>
+                            <div class="mini-stat-val" id="clientCounter" data-target="{{ preg_replace('/[^0-9]/', '', $hero_active_clients ?? '1200') }}">0+</div>
                             <div class="mini-stat-lbl">{{ __('Active Clients') }}</div>
                         </div>
                     </div>
@@ -1727,7 +1727,7 @@ statsObs.observe(document.getElementById('s1'));
     if(!el) return;
 
     let current = 0;
-    const target = 1000;
+    const target = parseInt(el.getAttribute('data-target')) || 1000;
     const duration = 2000;
     const step = target / (duration / 16);
     let countUp;
@@ -1765,7 +1765,7 @@ statsObs.observe(document.getElementById('s1'));
     const el = document.getElementById('latencyCounter');
     if(!el) return;
     let current = 0;
-    const target = 3;
+    const target = parseInt(el.getAttribute('data-target')) || 3;
     const timer = setInterval(() => {
         current++;
         el.textContent = current + 'ms';
@@ -1782,7 +1782,8 @@ statsObs.observe(document.getElementById('s1'));
 (function(){
     const el = document.getElementById('clientCounter');
     if(!el) return;
-    animateCount(el, 1200, '+', 2000);
+    const target = parseInt(el.getAttribute('data-target')) || 1200;
+    animateCount(el, target, '+', 2000);
 })();
 
 // ─── OLD SPEED RING (kept for stats section) ───
