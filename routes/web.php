@@ -304,9 +304,3 @@ Route::get('/navbar.js', function () {
 // ⚠️ Catch-all slug route — must be LAST
 Route::get('/{slug}', [\App\Http\Controllers\PageController::class, 'show'])->name('page.show');
 
-})->name('navbar.embed');
-
-
-
-// ⚠️ Catch-all slug route — must be LAST
-Route::get('/{slug}', [\App\Http\Controllers\PageController::class, 'show'])->name('page.show');
