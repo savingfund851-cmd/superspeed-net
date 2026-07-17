@@ -147,32 +147,6 @@ Route::get('/reset-admin', function () {
     return 'Admin user reset successful. Email: admin@superspeed.net, Password: Admin@12345';
 });
 
-// ─── TEMPORARY STORAGE EXPORT (will be removed after migration) ───────────────
-Route::get('/export-storage-9988', function () {
-    $storagePath = storage_path('app/public');
-    $zipFileName = storage_path('app/storage-export.zip');
-
-    $zip = new ZipArchive;
-    if ($zip->open($zipFileName, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
-        if (is_dir($storagePath)) {
-            $files = new RecursiveIteratorIterator(
-                new RecursiveDirectoryIterator($storagePath),
-                RecursiveIteratorIterator::LEAVES_ONLY
-            );
-            foreach ($files as $file) {
-                if (!$file->isDir()) {
-                    $filePath     = $file->getRealPath();
-                    $relativePath = substr($filePath, strlen($storagePath) + 1);
-                    $zip->addFile($filePath, str_replace('\\', '/', $relativePath));
-                }
-            }
-        }
-        $zip->close();
-    }
-
-    return response()->download($zipFileName)->deleteFileAfterSend(true);
-});
-
 // Auth routes must come before the slug catch-all
 require __DIR__.'/auth.php';
 
