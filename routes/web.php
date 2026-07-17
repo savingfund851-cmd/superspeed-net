@@ -147,6 +147,59 @@ Route::get('/reset-admin', function () {
     return 'Admin user reset successful. Email: admin@superspeed.net, Password: Admin@12345';
 });
 
+// ─── TEMPORARY DATA EXPORT ROUTE ─────────────────────────────────────────────
+Route::get('/download-full-backup-secret-9988', function () {
+    $zipFileName = storage_path('app/superspeed-live-backup.zip');
+    $sqlFileName = storage_path('app/database.sql');
+
+    // 1. Dump Database
+    $tables = \Illuminate\Support\Facades\DB::select('SHOW TABLES');
+    $sql = "";
+    foreach($tables as $table) {
+        $tableName = current((array)$table);
+        $createTable = \Illuminate\Support\Facades\DB::select("SHOW CREATE TABLE `{$tableName}`");
+        $sql .= "\n\nDROP TABLE IF EXISTS `{$tableName}`;\n";
+        $sql .= $createTable[0]->{'Create Table'} . ";\n\n";
+
+        $rows = \Illuminate\Support\Facades\DB::table($tableName)->get();
+        foreach($rows as $row) {
+            $insert = "INSERT INTO `{$tableName}` VALUES (";
+            $values = [];
+            foreach((array)$row as $val) {
+                if (is_null($val)) $values[] = "NULL";
+                else $values[] = "'" . addslashes($val) . "'";
+            }
+            $insert .= implode(",", $values) . ");\n";
+            $sql .= $insert;
+        }
+    }
+    file_put_contents($sqlFileName, $sql);
+
+    // 2. Zip Database and Storage Public Directory
+    $zip = new ZipArchive;
+    if ($zip->open($zipFileName, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+        $zip->addFile($sqlFileName, 'database.sql');
+
+        $storagePath = storage_path('app/public');
+        if (is_dir($storagePath)) {
+            $files = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($storagePath), 
+                RecursiveIteratorIterator::LEAVES_ONLY
+            );
+            foreach ($files as $name => $file) {
+                if (!$file->isDir()) {
+                    $filePath = $file->getRealPath();
+                    $relativePath = 'storage/app/public/' . substr($filePath, strlen($storagePath) + 1);
+                    $zip->addFile($filePath, str_replace('\\', '/', $relativePath));
+                }
+            }
+        }
+        $zip->close();
+    }
+
+    return response()->download($zipFileName)->deleteFileAfterSend(true);
+});
+
 // Auth routes must come before the slug catch-all
 require __DIR__.'/auth.php';
 
